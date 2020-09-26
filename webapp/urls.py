@@ -14,7 +14,6 @@ from flask_login import login_required, login_user, logout_user, current_user
 from webapp.definition.role import Role as RoleDefinition
 from webapp.definition.state import State as StateDefinition
 from webapp.definition.payment_status import PaymentStatus as PaymentStatusDefinition
-from webapp.form.PresentationForm import RegisterForm
 from webapp.mail import mail
 from webapp.models.society import *
 from webapp.models.user import *
