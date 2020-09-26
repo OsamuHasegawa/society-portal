@@ -1,0 +1,26 @@
+{% extends "layout_signup.html" %}
+
+{% block content %}
+
+    <div class="pt-5 pb-0 text-center">
+        <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename = 'images/logo-2xplus.png') }}" alt="logo"
+             height="72">
+        <h2>マイページ アカウント認証</h2>
+        <hr class="mb-4">
+        <p class="lead">アカウント認証が失敗しました．</p>
+        <p>
+            アカウント申請に失敗しているか，URLの有効期限が切れている可能性があります．<br />
+            下記URLから再度アカウント申請を行ってください．
+        </p>
+
+        <p><a href="/signup">アカウント登録申請はこちら</a></p>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        // 不要なヘッダーを隠す
+        $("header").hide();
+    </script>
+{% endblock %}

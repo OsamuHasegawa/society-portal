@@ -1,0 +1,63 @@
+{% extends "layout_html.html" %}
+
+{% block body %}
+    <div class="container">
+        <header>
+            <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+                <a class="navbar-brand" href="/home">
+                    <img src="{{ url_for('static', filename = 'images/logo-2xplus.png') }}" height="30" class="d-inline-block align-top" alt="logo">
+                    <span class="pl-2">日本情報科教育学会 マイページ</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav mr-auto">
+                        <a id="menu-home" class="nav-item nav-link active" href="/home">ホーム<span class="sr-only">(current)</span></a>
+                        <a id="menu-event" class="nav-item nav-link" href="/event/list">イベント</a>
+                        <a class="nav-item nav-link" href="http://jaeis.org/" target="_blank">学会HP</a>
+                    </div>
+                    <div class="navbar-nav">
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+                               aria-haspopup="true"
+                               aria-expanded="false">Login as</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <span class="dropdown-item-text">{{ login_user.user_profile.last_name }} {{ login_user.user_profile.first_name }}</span>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item disabled" href="#">会員情報（準備中）</a>
+                                <a class="dropdown-item disabled" href="#">設定（準備中）</a>
+                            </div>
+                        </div>
+                        <form class="form-inline my-2 my-lg-0 pl-3" action="/logout">
+                            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">ログアウト</button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        {% block content %}
+
+        {% endblock %}
+
+        <hr class="mt-4 mb-6 pb-5">
+
+        <footer class="mt-2 py-4 py-sm-3 fixed-bottom bg-light">
+            <div class="container">
+                <div class="text-left row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
+                    <span class="text-muted small col pr-5">
+                        &copy; 2020 Japanese Association for Education of Information Studies.&nbsp;
+                    </span>
+                    <span class="text-muted small col">
+                        <a class="" href="http://jaeis.org/" target="_blank">JAEIS ホームページ</a> ｜
+                        <a class="" href="#">プライバシーポリシー</a>
+        {#                <a class="" href="" disabled="">サイトマップ</a>#}
+                    </span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
+    <main role="main">
+        <div class="container">
+            {% if event_attend_user and not event_attend_user.cancel %}
+                {% if message %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+                <div class="card">
+                    <div class="card-header">
+                        {{ event.name }} 参加申込状況
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <th class="table-light w-25" scope="row">登録番号</th>
+                                <td>{{ event_attend_user.id }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">氏名</th>
+                                <td>{{ login_user.user_profile.last_name }} {{ login_user.user_profile.first_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">メールアドレス</th>
+                                <td>{{ login_user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">所属</th>
+                                <td>{{ login_user.user_profile.organization }} {{ login_user.user_profile.department }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">会員種別</th>
+                                <td>{{ login_user.member_type.label }}</td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">参加予定日</th>
+                                <td>
+                                    {% for d in event_attend_user.attend_date %}
+                                        {% if loop.first %}
+                                            <span>{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</span>
+                                        {% else %}
+                                            <span>，{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-light" scope="row">講演論文集</th>
+                                <td>{{ event_attend_user.expect_papers | replace('False', '希望しない') | replace('True', '希望する') }}</td>
+                            </tr>
+                            {% if event.has_social_gathering %}
+                                <tr>
+                                    <th class="table-light" scope="row">情報交換会</th>
+                                    <td>{{ event_attend_user.attend_social_gathering | replace('False', '参加しない') | replace('True', '参加する') }}</td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <th class="table-light align-middle" scope="row">費用</th>
+                                <td>
+                                    <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span><br/>
+                                    &yen;{{ fee.participation + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-light align-middle" scope="row">振込先</th>
+                                <td>
+                                    <p class="h6"><span class="badge badge-pill badge-danger">振込の際の注意点</span></p>
+                                    <ul>
+                                        <li>名義人を参加登録者と同じにして下さい．</li>
+                                        <li>振込状況確認のため，振込時，名義人の前に上記の登録番号を記入願います．</li>
+                                        <li>振込手数料は，各自でご負担下さい．</li>
+                                        <li>振込後のキャンセル・払い戻し・内容変更はできません．</li>
+                                    </ul>
+                                    <hr/>
+                                    <p class="lead">ゆうちょ銀行からお振込の場合</p>
+                                    <dl class="row">
+                                        <dt class="col-sm-3">記号</dt>
+                                        <dd class="col-sm-9">10370</dd>
+                                        <dt class="col-sm-3">番号</dt>
+                                        <dd class="col-sm-9">89549921</dd>
+                                        <dt class="col-sm-3">口座名義</dt>
+                                        <dd class="col-sm-9">日本情報科教育学会全国大会<br/><span class="small text-muted">（ニホンジョウホウカキョウイクガッカイゼンコクタイカイ）</span></dd>
+                                    </dl>
+                                    <hr/>
+                                    <p class="lead">その他の金融機関からお振込の場合</p>
+                                    <dl class="row">
+                                        <dt class="col-sm-3">銀行名</dt>
+                                        <dd class="col-sm-9">ゆうちょ銀行</dd>
+                                        <dt class="col-sm-3">金融機関コード</dt>
+                                        <dd class="col-sm-9">9900</dd>
+                                        <dt class="col-sm-3">店番</dt>
+                                        <dd class="col-sm-9">038</dd>
+                                        <dt class="col-sm-3">預金種目</dt>
+                                        <dd class="col-sm-9">普通</dd>
+                                        <dt class="col-sm-3">店名</dt>
+                                        <dd class="col-sm-9">〇三八店<span class="small text-muted">（ゼロサンハチ店）</span></dd>
+                                        <dt class="col-sm-3">口座番号</dt>
+                                        <dd class="col-sm-9">8954992</dd>
+                                        <dt class="col-sm-3">口座名義</dt>
+                                        <dd class="col-sm-9">日本情報科教育学会全国大会<br/><span class="small text-muted">（ニホンジョウホウカキョウイクガッカイゼンコクタイカイ）</span></dd>
+                                    </dl>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <hr/>
+                        <form action="/event/cancel" method="post">
+                            <input type="hidden" name="event_id" value="{{ event.id }}"/>
+                            {% if event_attend_user.payment_status == '振込確認済み' %}
+                                <button class="btn btn-warning btn-lg btn-block" type="submit" disabled>参加を取り消す<span class="small">（振込済みのため取り消せません）</span>
+                                </button>
+                            {% else %}
+                                <button class="btn btn-warning btn-lg btn-block" type="submit">参加を取り消す</button>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <h2>{{ event.name }}</h2>
+                        <form action="/event/attend" method="POST" class="needs-validation" novalidate oninput='validateForm()'>
+                            <input type="hidden" name="event_id" value="{{ event.id }}"/>
+                            <hr class="mb-4">
+                            <h4 class="mb-3">参加予定日</h4>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3 align-self-center">
+                                    {% for d in event.date %}
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="attend_date{{ loop.index0 }}" name="attend_date_list"
+                                                   value="{{ d }}">
+                                            <label class="custom-control-label"
+                                                   for="attend_date{{ loop.index0 }}">{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            {% if event.has_papers %}
+                                <hr class="mb-4">
+                                <h4 class="mb-3">講演論文集</h4>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-3 align-self-center">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="expect_papers1" name="expect_papers" class="custom-control-input" value="True" required>
+                                            <label class="custom-control-label" for="expect_papers1">希望する</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="expect_papers2" name="expect_papers" class="custom-control-input" value="False" checked
+                                                   required>
+                                            <label class="custom-control-label" for="expect_papers2">希望しない</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if event.has_social_gathering %}
+                                <hr class="mb-4">
+                                <h4 class="mb-3">情報交換会</h4>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-3 align-self-center">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="attend_social_gathering1" name="attend_social_gathering" class="custom-control-input"
+                                                   value="True" required>
+                                            <label class="custom-control-label" for="attend_social_gathering1">参加する</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="attend_social_gathering2" name="attend_social_gathering" class="custom-control-input"
+                                                   value="False" checked
+                                                   required>
+                                            <label class="custom-control-label" for="attend_social_gathering2">参加しない</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <hr class="mb-4">
+
+                            <button class="btn btn-info btn-lg btn-block" type="submit">参加登録する</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+{% endblock %}

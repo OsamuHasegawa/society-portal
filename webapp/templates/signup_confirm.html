@@ -1,0 +1,212 @@
+{% extends "layout_signup.html" %}
+
+{% block content %}
+
+    <div class="pt-5 pb-3 text-center">
+        <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename = 'images/logo-2xplus.png') }}" alt="logo"
+             height="72">
+        <h2>マイページ アカウント申請フォーム</h2>
+        <hr class="mb-4">
+        <p class="lead">入力した内容を確認して，「登録する」ボタンをクリックしてください．</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form action="/signup-complete" method="POST" class="needs-validation" novalidate oninput='validateForm()'>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName">姓</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" value="{{ form_data.get('lastName') }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName">名</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" value="{{ form_data.get('firstName') }}" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="lastNameKana">姓（カタカナ）</label>
+                        <input type="text" class="form-control" id="lastNameKana" name="lastNameKana" value="{{ form_data.get('lastNameKana') }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameKana">名（カタカナ）</label>
+                        <input type="text" class="form-control" id="firstNameKana" name="firstNameKana" value="{{ form_data.get('firstNameKana') }}" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="lastNameRoman">姓（ローマ字）</label>
+                        <input type="text" class="form-control" id="lastNameRoman" name="lastNameRoman" value="{{ form_data.get('lastNameRoman') }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameRoman">名（ローマ字）</label>
+                        <input type="text" class="form-control" id="firstNameRoman" name="firstNameRoman" value="{{ form_data.get('firstNameRoman') }}" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email1">メールアドレス<span class="text-muted"></span></label>
+                        <input type="email" class="form-control" id="email1" name="email1" value="{{ form_data.get('email1') }}" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="password1">パスワード<span class="text-muted"></span></label>
+                        <input data-toggle="password" type="password" class="form-control" id="password1" name="password1"  value="{{ form_data.get('password1') }}" readonly>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <h4 class="mb-3">所属</h4>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="organization">組織名（学校名・会社名）</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="organization" name="organization" value="{{ form_data.get('organization') }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="department">部署名</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="department" name="department" value="{{ form_data.get('department') }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <h4 class="mb-3">連絡先</h4>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3 align-self-end">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="address_type" name="address_type" readonly>
+                        </div>
+{#                        <div class="custom-control custom-radio">#}
+{#                            <input type="radio" id="address_type1" name="address_type" class="custom-control-input" value="{{ form_data.get('address_type') }}" readonly>#}
+{#                            <label class="custom-control-label" for="address_type1">自宅</label>#}
+{#                        </div>#}
+{#                        <div class="custom-control custom-radio">#}
+{#                            <input type="radio" id="address_type2" name="address_type" class="custom-control-input" readonly>#}
+{#                            <label class="custom-control-label" for="address_type2">勤務先</label>#}
+{#                        </div>#}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <!-- <label for="zip">Zip</label> -->
+                        <label for="zip01">郵便番号</label>
+                        <input type="text" class="form-control" id="zip01" name="zip01" value="{{ form_data.get('zip01') }}" readonly>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="state">都道府県</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="pref01" name="pref01" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <!-- <label for="address">Address</label> -->
+                    <label for="address1">市町村区</label>
+                    <!-- <input type="text" class="form-control" id="address" placeholder="1234 Main St" required> -->
+                    <input type="text" class="form-control" id="addr01" name="addr01" value="{{ form_data.get('addr01') }}" readonly>
+                    <div class="invalid-feedback">
+                        <!-- Please enter your shipping address. -->
+                        住所を入力してください．
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <!-- <label for="address">Address</label> -->
+                    <label for="address2">番地</label>
+                    <!-- <input type="text" class="form-control" id="address" placeholder="1234 Main St" required> -->
+                    <input type="text" class="form-control" id="addr02" name="addr02" value="{{ form_data.get('addr02') }}" readonly>
+                    <div class="invalid-feedback">
+                        <!-- Please enter your shipping address. -->
+                        住所を入力してください．
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <!-- <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label> -->
+                    <label for="address3">ビル，アパート，マンション名<span class="text-muted">（オプション）</span></label>
+                    <!-- <input type="text" class="form-control" id="address2" placeholder="Apartment or suite"> -->
+                    <input type="text" class="form-control" id="addr03" name="addr03" value="{{ form_data.get('addr03') }}" readonly>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="phone">電話番号</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ form_data.get('phone') }}" readonly>
+                        <div class="invalid-feedback">
+                            電話番号を入力してください．
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <h4 class="mb-3">会員種別</h4>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="member" name="member" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <button class="btn btn-primary btn-lg btn-block" type="submit">登録する</button>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    {#住所検索用スクリプト#}
+    <script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        function validateForm() {
+            email2.setCustomValidity(email2.value != email1.value || email2.value == "" ? "メールアドレスが一致していません．" : "");
+            password2.setCustomValidity(password2.value != password1.value || password2.value == "" ? "パスワードが一致していません．" : "");
+        }
+
+        address_type = ['自宅', '勤務先'];
+        prefectures = [null, '北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県', '茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県', '新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県', '三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県', '鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県', '福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'];
+        member = ['非会員', '正会員', '正会員（初等中等教育機関の教職員）', '学生会員', '協賛会員'];
+
+        $("#address_type").val(address_type[{{ form_data.get('address_type') }}]);
+        $("#pref01").val(prefectures[{{ form_data.get('pref01') }}]);
+        $("#member").val(member[{{ form_data.get('member') }}]);
+
+    </script>
+{% endblock %}

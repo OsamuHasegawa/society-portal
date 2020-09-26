@@ -1,0 +1,55 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    <main role="main">
+        <div class="container">
+            {% if message %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+            <div class="card-columns">
+                {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
+                {% for event, event_attend_user in event_attend_user_list %}
+                    <div class="card">
+                        <div class="card-header">{{ event.name }}</div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">開催日程：</dt>
+                                {% for d in event.date %}
+                                    {% if loop.first %}
+                                        <dd class="col-sm-8">{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</dd>
+                                    {% else %}
+                                        <dd class="col-sm-8 offset-sm-4">{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</dd>
+                                    {% endif %}
+                                {% endfor %}
+                                <dt class="col-sm-4">講演申込締切：</dt>
+                                <dd class="col-sm-8">{{ event.presenting_papers_period.strftime('%Y年%m月%d日') }}（{{ weekday_list[event.presenting_papers_period.weekday()] }}）</dd>
+                                <dt class="col-sm-4">参加申込締切：</dt>
+                                <dd class="col-sm-8">{{ event.attend_period.strftime('%Y年%m月%d日') }}（{{ weekday_list[event.attend_period.weekday()] }}）</dd>
+                                <dt class="col-sm-4">開催形式：</dt>
+                                <dd class="col-sm-8">{{ event.event_form.label }}</dd>
+                            </dl>
+                            <form method="post">
+                                {#                                <input type="hidden" name="event_id" value="{{ event.id }}" />#}
+                                {% if event.url %}
+                                    <a href="{{ event.url }}" class="btn btn-outline-info" target="_blank">大会詳細</a>
+                                {% endif %}
+                                {% if event_attend_user and not event_attend_user.cancel %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込内容を確認
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込</button>
+                                {% endif %}
+                                <button type="submit" class="btn btn-info" formaction="/event/presentation/register" name="event_id" value="{{ event.id }}" disabled>講演申込（準備中）</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+    </main>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+.card-columns {
+    column-count: 1;
+}
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 2;
+    }
+}

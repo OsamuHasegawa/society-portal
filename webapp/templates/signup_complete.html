@@ -1,0 +1,27 @@
+{% extends "layout_signup.html" %}
+
+{% block content %}
+
+    <div class="pt-5 pb-0 text-center">
+        <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename = 'images/logo-2xplus.png') }}" alt="logo"
+             height="72">
+        <h2>マイページ アカウント申請フォーム</h2>
+        <hr class="mb-4">
+        <p class="lead">アカウント申請が完了いたしました．</p>
+        <p>
+            アカウントの利用を開始するには認証手続きを行う必要があります．<br />
+            登録されたメールアドレスに認証手続き用のリンクをお送りしました．<br />
+            しばらくしてもメールが届かない場合は，メールアドレスの入力ミスや受信フィルタ設定などが原因として考えられます．
+        </p>
+
+{#        <p><a href="/login">ログインする</a></p>#}
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        // 不要なヘッダーを隠す
+        $("header").hide();
+    </script>
+{% endblock %}
