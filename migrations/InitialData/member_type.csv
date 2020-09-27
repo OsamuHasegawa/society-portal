@@ -1,0 +1,5 @@
+0,NON_MEMBER,非会員
+1,MEMBER,正会員
+2,MEMBER_TEACHER,正会員（初等中等教育機関の教職員）
+3,MEMBER_STUDENT,学生会員
+4,MEMBER_SUPPORT,協賛会員
