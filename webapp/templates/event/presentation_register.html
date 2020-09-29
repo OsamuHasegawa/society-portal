@@ -1,0 +1,119 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
+    <main role="main">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h2>{{ event.name }}&nbsp;講演申込</h2>
+                    <form action="/event/presentation/register" method="POST" class="needs-validation" novalidate oninput='validateForm()'>
+                        <input type="hidden" name="event_id" value="{{ event.id }}"/>
+
+                        <hr class="mb-3">
+
+                        <p class="lead">次のフォームに必要事項をご記入ください．</p>
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <legend class="col-form-label col-sm-2 pt-0">発表種別</legend>
+                                <div class="col-sm-10 mb-3 align-self-center">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="address_type1" name="address_type" class="custom-control-input" value="0" required>
+                                        <label class="custom-control-label" for="address_type1">口頭発表</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="address_type2" name="address_type" class="custom-control-input" value="1" required>
+                                        <label class="custom-control-label" for="address_type2">ポスター発表</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="address_type2" name="address_type" class="custom-control-input" value="1" required>
+                                        <label class="custom-control-label" for="address_type2">デモンストレーション</label>
+                                        <div class="invalid-feedback">
+                                            <!-- Valid first name is required. -->
+                                            発表種別を選択してください．
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="title">タイトル</label>
+                            <div class="col-sm-10 mb-3 align-self-center">
+                                <input type="text" class="form-control" id="title" name="title" placeholder="タイトル" value="" required>
+                                <div class="invalid-feedback">
+                                    <!-- Valid first name is required. -->
+                                    タイトルを入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="abstract">概要</label>
+                            <div class="col-sm-10 mb-3 align-self-center">
+                                <textarea class="form-control" id="abstract" name="abstract" placeholder="400文字以内" rows="10" maxlength="400"
+                                          required></textarea>
+                                <p class="text-right"><span id="count" class="badge badge-pill badge-success">400</span></p>
+                                <div class="invalid-feedback">
+                                    Please enter a message in the textarea.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-form-label col-sm-2 pt-0">キーワード</div>
+                            <div class="col-sm-10 mb-3 align-self-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="attend_date" name="attend_date_list" value="">
+                                    <label class="custom-control-label" for="attend_date">aaa</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <button class="btn btn-info btn-lg btn-block" type="submit">参加登録する</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        $(function () {
+            $('#abstract').keyup(function () {
+                let remain = 400 - $(this).val().length;
+
+                $('#count').text(remain);
+                if (remain < 0) {
+                    $('#count').addClass("badge-danger")
+                    $('#count').removeClass("badge-success")
+                } else {
+                    $('#count').addClass("badge-success")
+                    $('#count').removeClass("badge-danger")
+                }
+            });
+        });
+    </script>
+{% endblock %}
