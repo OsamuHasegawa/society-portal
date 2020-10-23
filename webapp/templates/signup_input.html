@@ -81,7 +81,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="email2">メールアドレス（確認用）<span class="text-muted"></span></label>
-                        <input type="email" class="form-control" id="email2" name="email2" placeholder="you@example.com" value="">
+                        <input type="email" class="form-control" id="email2" name="email2" placeholder="you@example.com" value="" required>
                         <div class="invalid-feedback">
                             メールアドレスが一致していません．
                         </div>
@@ -91,15 +91,14 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="password1">パスワード<span class="text-muted"></span></label>
-                        <input data-toggle="password" type="password" class="form-control" id="password1" name="password1" required value="">
+                        <input data-toggle="password" type="password" class="form-control" id="password1" name="password1" value="" required >
                         <div class="invalid-feedback">
-                            <!-- Please enter a valid email address for shipping updates. -->
                             パスワードを入力してください．
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="password2">パスワード（確認用）<span class="text-muted"></span></label>
-                        <input data-toggle="password" type="password" class="form-control" id="password2" name="password2" value="">
+                        <input data-toggle="password" type="password" class="form-control" id="password2" name="password2" value="" required >
                         <div class="invalid-feedback">
                             パスワードが一致していません．
                         </div>
@@ -316,10 +315,14 @@
             }, false);
         })();
 
+        const email1 = document.getElementById("email1");
+        const email2 = document.getElementById("email2");
+        const password1 = document.getElementById("password1");
+        const password2 = document.getElementById("password2");
 
         function validateForm() {
-            email2.setCustomValidity(email2.value != email1.value || email2.value == "" ? "メールアドレスが一致していません．" : "");
-            password2.setCustomValidity(password2.value != password1.value || password2.value == "" ? "パスワードが一致していません．" : "")
+            email2.setCustomValidity(email2.value != email1.value ? "メールアドレスが一致していません．" : "");
+            password2.setCustomValidity(password2.value != password1.value ? "パスワードが一致していません．" : "")
         }
     </script>
 {% endblock %}
