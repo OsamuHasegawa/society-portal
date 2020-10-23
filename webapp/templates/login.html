@@ -9,7 +9,7 @@
     <form class="form-signin" action="/login" method="post">
         <div class="text-center mb-4">
             <img class="mb-4" src="{{ url_for('static', filename = 'images/logo-2xplus.png') }}" alt="logo" height="72">
-            <h1 class="h3 mb-3 font-weight-normal">日本情報科教育学会<br/>マイページ</h1>
+            <h1 class="h3 mb-3 font-weight-normal">全国大会 参加登録ページ</h1>
             {% if message %}
             <p id="message" class="alert {{ alerts }}" role="alert">{{ message }}</p>
             {% endif %}
@@ -24,7 +24,7 @@
             <label for="inputPassword">パスワード</label>
         </div>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit">サインイン</button>
+        <button class="btn btn-lg btn-info btn-block" type="submit">サインイン</button>
         <hr/>
         <p><a href="/signup">アカウントを作成する</a></p>
 {#        <p><a href="/register">パスワードを忘れた方はこちら</a></p>#}
