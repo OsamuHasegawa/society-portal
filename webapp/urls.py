@@ -34,6 +34,10 @@ def request_loader(req):
 
     if user:
         password = form_data.get('password')
+
+        if not password:
+            return
+
         salt = user.salt
         secret_salt = current_app.config["SECRET_SALT"]
         password = hashlib.sha512((secret_salt + password + salt).encode()).hexdigest()
@@ -64,7 +68,9 @@ def login():
     else:
         return render_template('login.html', title='ログインページ｜JAEIS ポータル', message='ユーザIDもしくはパスワードが間違っています', alerts='alert-danger')
 
-    if StateDefinition.ENABLE.value != user.state:
+    if StateDefinition.CHANGE_PASSWORD.value == user.state:
+        return render_template('login.html', title='ログインページ｜JAEIS ポータル', message='パスワードリセット手続き中です． メールに記載されたリンクからパスワード変更を行ってください', alerts='alert-warning')
+    elif StateDefinition.ENABLE.value != user.state:
         return render_template('login.html', title='ログインページ｜JAEIS ポータル', message='アカウント認証が完了していません． メールに記載されたリンクから認証作業を行ってください', alerts='alert-warning')
     elif password != user.password:
         return render_template('login.html', title='ログインページ｜JAEIS ポータル', message='ユーザIDもしくはパスワードが間違っています', alerts='alert-danger')
@@ -147,7 +153,7 @@ def signup_complete():
     subject = "JAEIS マイページ アカウント認証"
     body = f"""{form_data.get('lastName')} {form_data.get('firstName')} 様
            
-JAEISマイページのアカウント申請を受け付けました．
+JAEIS全国大会参加登録ページのアカウント申請を受け付けました．
 下記のURLをクリックして登録を完了してください．
 {request.host_url}authenticate?token={token}
 
@@ -182,6 +188,85 @@ def authenticate():
         return render_template('authenticate_success.html', title='アカウント認証｜JAEIS ポータル')
     else:
         return render_template('authenticate_failure.html', title='アカウント認証｜JAEIS ポータル')
+
+
+@urls.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "GET":
+        return render_template('reset_password.html', title='パスワードリセット｜JAEIS ポータル', alerts="alert-light", message="アカウント作成時に登録したメールアドレスを入力してください．")
+    else:
+        token = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(36)])
+        user = db.session.query(User).filter(User.email == request.form.get('email')).first()
+
+        if not user:
+            return render_template('reset_password.html', title='パスワードリセット｜JAEIS ポータル', alerts="alert-warning", message="入力されたメールアドレスは登録されていません．")
+
+        user.state = StateDefinition.CHANGE_PASSWORD.value
+        user.token = token
+        user.token_period = datetime.now(JST) + timedelta(days=1)
+        user.updated_at = datetime.now(JST)
+
+        db.session.add(user)
+        db.session.commit()
+
+        subject = "JAEIS 全国大会参加登録ページ パスワードリセット"
+        body = f"""JAEIS全国大会参加登録ページのパスワードリセット申請を受け付けました．
+下記のURLをクリックしてパスワードリセットを完了してください．
+{request.host_url}change-password?token={token}
+このリンクの有効期限は24時間です．
+
+新しいパスワードリセットリンクを取得するには，
+{request.host_url}reset-password
+にアクセスしてください．
+
+不具合，不明な点がございましたら下記までご連絡願います．
+
+--
+日本情報科教育学会 全国大会実行委員会
+Email: taikai@jaeis-org.sakura.ne.jp
+"""
+        msg = Message(recipients=[request.form.get('email')], body=body, subject=subject)
+        mail.send(msg)
+
+        return render_template('reset_password.html', title='パスワードリセット｜JAEIS ポータル', state="send-link", alerts="alert-success", message="パスワードリセット用リンクを送信しました．")
+
+
+@urls.route("/change-password", methods=["GET", "POST"])
+def change_password():
+    if request.method == "GET":
+        token = request.args.get('token', default='', type=str)
+        user = db.session.query(User).filter(
+            db.and_(User.token == token, User.state == StateDefinition.CHANGE_PASSWORD.value, User.token_period >= datetime.now(JST))).first()
+        if user:
+            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', user=user)
+        else:
+            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', alerts="alert-warning",
+                                   message="パスワードリセットに失敗しているか，URLの有効期限が切れている可能性があります．")
+    else:
+        user = db.session.query(User).filter(
+            db.and_(User.email == request.form.get('email'), User.state == StateDefinition.CHANGE_PASSWORD.value,
+                    User.token_period >= datetime.now(JST))).first()
+
+        if user:
+
+            salt = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(32)])
+            secret_salt = current_app.config["SECRET_SALT"]
+
+            user.password = hashlib.sha512((secret_salt + request.form.get('password1') + salt).encode()).hexdigest()
+            user.salt = salt
+            user.state = StateDefinition.ENABLE.value
+            user.token = ''
+            user.token_period = None
+            user.updated_at = datetime.now(JST)
+
+            db.session.add(user)
+            db.session.commit()
+
+            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', state="change-password-success", alerts="alert-success", message="パスワードを変更しました．")
+
+        else:
+            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', alerts="alert-warning",
+                                   message="パスワードリセットに失敗しているか，URLの有効期限が切れている可能性があります．")
 
 
 @urls.route("/home")
@@ -254,7 +339,8 @@ def event_attend():
     fee = db.session.query(EventFee).filter(
         db.and_(EventFee.event_id == form.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
 
-    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, message='参加申込を受付ました．')
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee,
+                           message='参加申込を受付ました．')
 
 
 @urls.route("/event/cancel", methods=["POST"])
@@ -280,17 +366,17 @@ def event_cancel():
                            event_attend_user_list=event_attend_user_list, message=event_attend_user.event.name + "参加を取り消しました．")
 
 
-@urls.route("/event/presentation/register", methods=["POST"])
-@login_required
-def event_presentation_register():
-    _login_user = load_user(current_user.id)
-    form = request.form
-    register_form = RegisterForm()
-    print(register_form)
-
-    event = db.session.query(Event).filter(Event.id == request.form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
-        EventAttendUser,
-        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
-    # if register_form.validate_on_submit():
-
-    return render_template('event/presentation_register.html', title='発表登録｜JAEIS ポータル', login_user=_login_user, event=event, form=register_form)
+# @urls.route("/event/presentation/register", methods=["POST"])
+# @login_required
+# def event_presentation_register():
+#     _login_user = load_user(current_user.id)
+#     form = request.form
+#     register_form = RegisterForm()
+#     print(register_form)
+#
+#     event = db.session.query(Event).filter(Event.id == request.form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+#         EventAttendUser,
+#         db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+#     # if register_form.validate_on_submit():
+#
+#     return render_template('event/presentation_register.html', title='発表登録｜JAEIS ポータル', login_user=_login_user, event=event, form=register_form)
