@@ -1,10 +1,12 @@
 import hashlib
 import jaconv
+import os
 import random
 import string
 
 from flask import Blueprint
 from flask import current_app
+from flask import flash
 from flask import render_template
 from flask import request, redirect, url_for
 from flask import session
@@ -262,7 +264,8 @@ def change_password():
             db.session.add(user)
             db.session.commit()
 
-            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', state="change-password-success", alerts="alert-success", message="パスワードを変更しました．")
+            return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', state="change-password-success", alerts="alert-success",
+                                   message="パスワードを変更しました．")
 
         else:
             return render_template('change_password.html', title='パスワード変更｜JAEIS ポータル', alerts="alert-warning",
@@ -285,7 +288,10 @@ def get_event_list():
     for event in event_list:
         event_attend_user = db.session.query(EventAttendUser).filter(
             db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id)).first()
-        event_attend_user_list.append([event, event_attend_user])
+
+        presentation = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
+
+        event_attend_user_list.append([event, event_attend_user, presentation])
     print(event_attend_user_list)
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_attend_user_list=event_attend_user_list, message='')
 
@@ -366,17 +372,160 @@ def event_cancel():
                            event_attend_user_list=event_attend_user_list, message=event_attend_user.event.name + "参加を取り消しました．")
 
 
-# @urls.route("/event/presentation/register", methods=["POST"])
-# @login_required
-# def event_presentation_register():
-#     _login_user = load_user(current_user.id)
-#     form = request.form
-#     register_form = RegisterForm()
-#     print(register_form)
-#
-#     event = db.session.query(Event).filter(Event.id == request.form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
-#         EventAttendUser,
-#         db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
-#     # if register_form.validate_on_submit():
-#
-#     return render_template('event/presentation_register.html', title='発表登録｜JAEIS ポータル', login_user=_login_user, event=event, form=register_form)
+@urls.route("/event/presentation/register/input", methods=["POST"])
+@login_required
+def event_presentation_register():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+
+    return render_template('event/presentation_register_input.html', title='発表登録｜JAEIS ポータル', login_user=_login_user, event=event)
+
+
+@urls.route("/event/presentation/change_co_author_num", methods=["POST"])
+@login_required
+def co_author_form():
+    co_author_num = request.form.get('co_author_num')
+    print(co_author_num)
+    return render_template('co_author_form.html', title='発表登録｜JAEIS ポータル', co_author_num=int(co_author_num))
+
+
+@urls.route("/event/presentation/register/confirm", methods=["POST"])
+@login_required
+def event_presentation_confirm():
+    _login_user = load_user(current_user.id)
+    form = request.form
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+    keyword_list = ','.join(form.getlist('keyword'))
+    return render_template('event/presentation_register_confirm.html', title='発表登録｜JAEIS ポータル', login_user=_login_user, event=event, form=form,
+                           keyword_list=keyword_list)
+
+
+@urls.route("/event/presentation/register/complete", methods=["POST"])
+@login_required
+def event_presentation_complete():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    user_profile = db.session.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
+    user_profile.first_name_roman = form.get('firstNameRoman')
+    user_profile.last_name_roman = form.get('lastNameRoman')
+    db.session.add(user_profile)
+    db.session.flush()
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+
+    presentation = Presentation(user_id=current_user.id, event_id=event.id, type=form.get('presentation_type'), title=form.get('title'),
+                                abstract=form.get('abstract'), keyword=form.get('keyword'), keyword_free=form.get('keyword-free'),
+                                _copyright=form.get('copyright'), paper_status='原稿未提出', is_cancel=False)
+    db.session.add(presentation)
+    db.session.flush()
+
+    for i in range(int(form.get('coAuthorNum'))):
+        co_author = CoAuthor(member_id='', email='', first_name=form.get('firstName-' + str(i + 1)), last_name=form.get('lastName-' + str(i + 1)),
+                             first_name_kana=form.get('firstNameKana-' + str(i + 1)), last_name_kana=form.get('lastNameKana-' + str(i + 1)),
+                             first_name_roman=form.get('firstNameRoman-' + str(i + 1)), last_name_roman=form.get('lastNameRoman-' + str(i + 1)),
+                             organization=form.get('organization-' + str(i + 1)), department=form.get('department-' + str(i + 1)))
+
+        db.session.add(co_author)
+        db.session.flush()
+
+        presentation_co_author = PresentationCoAuthor(presentation_id=presentation.id, co_author_id=co_author.id)
+        db.session.add(presentation_co_author)
+        db.session.flush()
+
+    db.session.commit()
+
+    presentation_list = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).all()
+
+    return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user, event=event, presentation_list=presentation_list, message='発表申込が完了しました．', alert='alert-success')
+
+
+@urls.route("/event/presentation/list", methods=["POST"])
+@login_required
+def event_presentation_list():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+
+    presentation_list = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).order_by(Presentation.id.asc()).all()
+
+    return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user, event=event,
+                           presentation_list=presentation_list)
+
+
+@urls.route("/event/presentation/cancel", methods=["POST"])
+@login_required
+def event_presentation_cancel():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    presentation = db.session.query(Presentation).filter(Presentation.id == form.get('presentation_id')).first()
+    presentation.is_cancel = True
+    db.session.add(presentation)
+    db.session.flush()
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+
+    presentation_list = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).order_by(Presentation.id.asc()).all()
+
+    db.session.commit()
+
+    return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user,
+                           event=event, presentation_list=presentation_list, message='1件の発表を取り消しました．', alert='alert-warning')
+
+
+@urls.route("/event/presentation/upload-paper", methods=["POST"])
+@login_required
+def event_presentation_upload_paper():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).join(EventForm, Event.event_form_id == EventForm.id).outerjoin(
+        EventAttendUser,
+        db.and_(Event.id == EventAttendUser.event_id, EventAttendUser.user_id == current_user.id)).first()
+
+    presentation_list = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).order_by(Presentation.id.asc()).all()
+
+    if 'inputFile' not in request.files:
+        flash('No file part')
+        return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user,
+                               event=event, presentation_list=presentation_list, message='リクエストにファイルパートが含まれていません．', alert='alert-danger')
+
+    file = request.files['inputFile']
+    file_name = file.filename
+    if '' == file_name:
+        flash('No selected file')
+        return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user,
+                               event=event, presentation_list=presentation_list, message='ファイルが選択されていません．', alert='alert-danger')
+
+    print('eventId', form.get('event_id'))
+    print(request.files)
+    print('presentationId', form.get('presentation_id'))
+
+    app_root = os.path.dirname(os.path.abspath(__file__))
+    upload_folder = 'uploads/papers/events/' + str(event.id)
+    os.makedirs(os.path.join(app_root, upload_folder), exist_ok=True)
+
+    upload_file_name = str(current_user.id) + '-' + str(form.get('presentation_id')) + '.pdf'
+    file.save(os.path.join(app_root, upload_folder, upload_file_name))
+
+    presentation = db.session.query(Presentation).filter(Presentation.id == form.get('presentation_id')).first()
+    presentation.paper_status = '原稿提出済み'
+    db.session.add(presentation)
+    db.session.commit()
+
+    return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user, event=event,
+                           presentation_list=presentation_list, message='原稿をアップロードしました．', alert='alert-success')

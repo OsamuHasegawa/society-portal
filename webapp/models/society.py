@@ -88,6 +88,92 @@ class EventAttendUser(db.Model):
         self.attend_social_gathering = attend_social_gathering
         self.payment_status = payment_status
 
+
+class Presentation(db.Model):
+    __tablename__ = 'presentation'
+
+    id = db.Column(db.Integer, db.Sequence('presentation_id_seq'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.TEXT, nullable=False)
+    abstract = db.Column(db.TEXT, nullable=False)
+    keyword = db.Column(db.TEXT, nullable=True)
+    keyword_free = db.Column(db.TEXT, nullable=True)
+    copyright = db.Column(db.TEXT, nullable=False)
+    paper_status = db.Column(db.TEXT, nullable=True)
+    is_cancel = db.Column(db.Boolean, nullable=True, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST))
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST), onupdate=datetime.now(JST))
+
+    def __init__(self, user_id, event_id, type, title, abstract, keyword, keyword_free, _copyright, paper_status, is_cancel):
+        self.user_id = user_id
+        self.event_id = event_id
+        self.type = type
+        self.title = title
+        self.abstract = abstract
+        self.keyword = keyword
+        self.keyword_free = keyword_free
+        self.copyright = _copyright
+        self.paper_status = paper_status
+        self.is_cancel = is_cancel
+
+
+class CoAuthor(db.Model):
+    __tablename__ = 'co_author'
+
+    id = db.Column(db.Integer, db.Sequence('co_author_id_seq'), primary_key=True)
+    member_id = db.Column(db.TEXT, nullable=True)
+    email = db.Column(db.TEXT, nullable=True)
+    first_name = db.Column(db.TEXT, nullable=False)
+    last_name = db.Column(db.TEXT, nullable=False)
+    first_name_kana = db.Column(db.TEXT, nullable=False)
+    last_name_kana = db.Column(db.TEXT, nullable=False)
+    first_name_roman = db.Column(db.TEXT, nullable=False)
+    last_name_roman = db.Column(db.TEXT, nullable=False)
+    organization = db.Column(db.TEXT, nullable=False)
+    department = db.Column(db.TEXT, nullable=True)
+
+    def __init__(self, member_id, email, first_name, last_name, first_name_kana, last_name_kana, first_name_roman, last_name_roman, organization, department):
+        self.member_id = member_id
+        self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.first_name_kana = first_name_kana
+        self.last_name_kana = last_name_kana
+        self.first_name_roman = first_name_roman
+        self.last_name_roman = last_name_roman
+        self.organization = organization
+        self.department = department
+
+
+class PresentationCoAuthor(db.Model):
+    __tablename__ = 'presentation_co_author'
+
+    id = db.Column(db.Integer, db.Sequence('presentation_co_author_id_seq'), primary_key=True)
+    presentation_id = db.Column(db.Integer, db.ForeignKey('presentation.id'), nullable=False)
+    co_author_id = db.Column(db.Integer, db.ForeignKey('co_author.id'), nullable=False)
+
+    def __init__(self, presentation_id, co_author_id):
+        self.presentation_id = presentation_id
+        self.co_author_id = co_author_id
+
+
+# class Paper(db.Model):
+#     __tablename__ = 'paper'
+#
+#     id = db.Column(db.Integer, db.Sequence('presentation_id_seq'), primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+
+
+# class PresentationPaper(db.Model):
+#     __tablename__ = 'presentation_paper'
+#
+#     id = db.Column(db.Integer, db.Sequence('presentation_id_seq'), primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+
 # class EventPresentationUser(db.Model):
 #     __tablename__ = 'event_presentation_user'
 #     __table_args__ = (db.UniqueConstraint('user_id', 'event_id', name='event_presentation_uix_user_id_event_id'), {})

@@ -1,0 +1,283 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
+    <main role="main">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h2>{{ event.name }}&nbsp;発表申込</h2>
+                    <form action="/event/presentation/register/confirm" method="POST" class="needs-validation" novalidate>
+                        <input type="hidden" name="event_id" value="{{ event.id }}"/>
+
+                        <hr class="mb-3">
+
+                        <p class="lead">次のフォームに必要事項をご記入ください．</p>
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <legend class="col-form-label col-sm-3 pt-0">発表種別</legend>
+                                <div class="col-sm-9 mb-3 align-self-center">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="presentation_type1" name="presentation_type" class="custom-control-input" value="0" checked required>
+                                        <label class="custom-control-label" for="presentation_type1">口頭発表</label>
+                                        <div class="invalid-feedback">
+                                            <!-- Valid first name is required. -->
+                                            発表種別を選択してください．
+                                        </div>
+                                    </div>
+{#                                    <div class="custom-control custom-radio">#}
+{#                                        <input type="radio" id="address_type2" name="address_type" class="custom-control-input" value="1" required>#}
+{#                                        <label class="custom-control-label" for="address_type2">ポスター発表</label>#}
+{#                                    </div>#}
+{#                                    <div class="custom-control custom-radio">#}
+{#                                        <input type="radio" id="address_type2" name="address_type" class="custom-control-input" value="1" required>#}
+{#                                        <label class="custom-control-label" for="address_type2">デモンストレーション</label>#}
+{#                                        <div class="invalid-feedback">#}
+{#                                            <!-- Valid first name is required. -->#}
+{#                                            発表種別を選択してください．#}
+{#                                        </div>#}
+{#                                    </div>#}
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="title">タイトル</label>
+                            <div class="col-sm-9 mb-3 align-self-center">
+                                <input type="text" class="form-control" id="title" name="title" placeholder="タイトル" value="" required>
+                                <div class="invalid-feedback">
+                                    タイトルを入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="abstract">概要
+                                <small id="keyword-free-help-block" class="form-text text-muted">400文字以内</small>
+                            </label>
+                            <div class="col-sm-9 mb-3 align-self-center">
+                                <textarea class="form-control" id="abstract" name="abstract" placeholder="400文字以内" rows="10" maxlength="400"
+                                          required></textarea>
+                                <p class="text-right"><span id="count" class="badge badge-pill badge-success">400</span></p>
+                                <div class="invalid-feedback">
+                                    概要を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-form-label col-sm-3 pt-0">キーワード
+                                <small id="keyword-free-help-block" class="form-text text-muted">関わりの深いキーワードを1つ以上選択してください</small>
+                            </div>
+                            <div class="col-sm-9 mb-3 align-self-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-1" name="keyword" value="カリキュラム・教材">
+                                    <label class="custom-control-label" for="keyword-1">カリキュラム・教材</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-2" name="keyword" value="情報科の考察・評価">
+                                    <label class="custom-control-label" for="keyword-2">情報科の考察・評価</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-3" name="keyword" value="教員養成">
+                                    <label class="custom-control-label" for="keyword-3">教員養成</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-4" name="keyword" value="社会と情報">
+                                    <label class="custom-control-label" for="keyword-4">社会と情報</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-5" name="keyword" value="情報の科学">
+                                    <label class="custom-control-label" for="keyword-5">情報の科学</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-6" name="keyword" value="プログラミング教育">
+                                    <label class="custom-control-label" for="keyword-6">プログラミング教育</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-7" name="keyword" value="高大連携">
+                                    <label class="custom-control-label" for="keyword-7">高大連携</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="keyword-8" name="keyword" value="教育の情報化">
+                                    <label class="custom-control-label" for="keyword-8">教育の情報化</label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="keyword-free">
+                                サブキーワード
+                                <small id="keyword-free-help-block" class="form-text text-muted">カンマ区切りで数個</small>
+                            </label>
+                            <div class="col-sm-9 mb-3 align-self-center">
+                                <input type="text" class="form-control" id="keyword-free" name="keyword-free" placeholder="任意のキーワード" value="">
+                            </div>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <h4>著者情報</h4>
+
+                        <h5 class="mb-3">著者（登壇者）</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="organization">所属機関</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="organization" name="organization"  value="{{ login_user.user_profile.organization }}" disabled>
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                        所属機関を入力してください．
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="department">部署名</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="department" name="department"  value="{{ login_user.user_profile.department }}" disabled>
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                        部署名を入力してください．
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName">姓</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="{{ login_user.user_profile.last_name }}" value="" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName">名</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="{{ login_user.user_profile.first_name }}" value="" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastNameKana">姓（カタカナ）</label>
+                                <input type="text" class="form-control" id="lastNameKana" name="lastNameKana" placeholder="ヤマダ" value="{{ login_user.user_profile.last_name_kana }}" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstNameKana">名（カタカナ）</label>
+                                <input type="text" class="form-control" id="firstNameKana" name="firstNameKana" placeholder="タロウ" value="{{ login_user.user_profile.first_name_kana }}" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastNameKana">姓（英字）</label>
+                                <input type="text" class="form-control" id="lastNameRoman" name="lastNameRoman" placeholder="YAMADA" value="{{ login_user.user_profile.last_name_roman }}" required>
+                                <div class="invalid-feedback">
+                                    姓（英字）を入力してください．
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstNameKana">名（英字）</label>
+                                <input type="text" class="form-control" id="firstNameRoman" name="firstNameRoman" placeholder="Tarou" value="{{ login_user.user_profile.first_name_roman }}" required>
+                                <div class="invalid-feedback">
+                                    名（英字）を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="coAuthorNum">共同著者数</label>
+                            <div class="col-md-3 mb-2">
+                                <select class="custom-control custom-select" id="coAuthorNum" name="coAuthorNum">
+                                    <option value="0" selected>0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="co-author">
+
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <div class="form-group row">
+                            <div class="col-form-label col-sm-3 pt-0">
+                                著作権
+                                <small class="form-text text-danger">
+                                    ※同意できない場合は発表できません．
+                                </small>
+                            </div>
+                            <div class="col-sm-9 mb-3 align-self-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="copyright" name="copyright" value="agree" required>
+                                    <label class="custom-control-label" for="copyright">同意する</label>
+                                    <small class="form-text text-muted">
+                                        全国大会への投稿論文の著作権は，日本情報科教育学会（以下、本学会） に帰属します．ただし，論文の著作者が研究や教育的目的でその論文原稿を使用する場合は、本学会はその使用を許諾します．
+                                    </small>
+                                    <small class="form-text text-muted">
+                                        ※なお，論文を掲載する際の表示氏名は，論文表記のものとさせていただきます．
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <button class="btn btn-info btn-lg btn-block" type="submit">入力内容を確認する</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        $(function () {
+            // 概要の文字数カウント
+            $('#abstract').keyup(function () {
+                let remain = 400 - $(this).val().length;
+
+                $('#count').text(remain);
+                if (remain < 0) {
+                    $('#count').addClass("badge-danger")
+                    $('#count').removeClass("badge-success")
+                } else {
+                    $('#count').addClass("badge-success")
+                    $('#count').removeClass("badge-danger")
+                }
+            });
+
+            // 共著者の人数変更
+            $('#coAuthorNum').change(function () {
+                let co_author_num = $('[name=coAuthorNum]').val();
+                $.post('/event/presentation/change_co_author_num', {'co_author_num' : co_author_num} )
+                    .done(function( data ) {
+                        $('#co-author').html(data);
+                })
+            });
+
+        });
+    </script>
+{% endblock %}

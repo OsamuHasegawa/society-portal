@@ -1,0 +1,137 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    <main role="main">
+        <div class="container">
+
+            <h4>
+                発表一覧（
+                {% if event.url %}
+                    <a href="{{ event.url }}" class="text-body" target="_blank">{{ event.name }}&nbsp;&nbsp;<i
+                            class="fas fa-external-link-alt"></i></a>
+                    {% else %}#}
+                    {{ event.name }}
+                {% endif %}
+                ）
+            </h4>
+
+            <hr class="mb-4">
+
+            {% if message %}
+                <div class="alert {{ alert }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+            <div class="card-columns">
+                {% for presentation in presentation_list %}
+                    <div class="card">
+                        <div class="card-header font-weight-bold">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    発表 {{ loop.index }}
+                                </div>
+                                <div class="col-md-8">
+                                    <span class="badge badge-pill badge-{{ 'info' if presentation.paper_status == '原稿提出済み' else 'danger' }}">{{ presentation.paper_status }}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">発表種別</dt>
+                                <dd class="col-sm-8">口頭発表</dd>
+                                <dt class="col-sm-4">タイトル</dt>
+                                <dd class="col-sm-8">{{ presentation.title }}</dd>
+                                <dt class="col-sm-4">概要</dt>
+                                <dd class="col-sm-8">{{ presentation.abstract }}</dd>
+                                <dt class="col-sm-4">キーワード</dt>
+                                <dd class="col-sm-8">{{ presentation.keyword | replace(',','，') }}</dd>
+                                <dt class="col-sm-4">サブキーワード</dt>
+                                <dd class="col-sm-8">{{ presentation.keyword_free | replace(',','，') }}</dd>
+{#                                <dt class="col-sm-4">原稿提出状況：</dt>#}
+{#                                <dd class="col-sm-8 text-{{ 'danger' if presentation.paper_status == '原稿未提出' else 'info' }}">{{ presentation.paper_status }}#}
+                                </dd>
+                            </dl>
+
+                            <form method="post">
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <button type="button" class="btn btn-info" data-toggle="modal"
+                                        data-target="#exampleModal-{{ presentation.id }}" data-whatever="@mdo"
+                                        name="presentation_id" value="{{ presentation.id }}">原稿アップロード
+                                </button>
+                                <button type="submit" class="btn btn-warning"
+                                        formaction="/event/presentation/cancel"
+                                        name="presentation_id" value="{{ presentation.id }}">発表取消
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <form method="post">
+                <button type="submit" class="btn btn-info" formaction="/event/presentation/register/input"
+                        name="event_id"
+                        value="{{ event.id }}">新規発表申込
+                </button>
+            </form>
+
+            {% for presentation in presentation_list %}
+
+                <div class="modal fade" id="exampleModal-{{ presentation.id }}" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">原稿をアップロードする</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="uploadFile-{{ presentation.id }}" action="/event/presentation/upload-paper" method="post"
+                                      enctype="multipart/form-data">
+                                    <input type="hidden" name="event_id" value="{{ event.id }}">
+                                    <input type="hidden" name="presentation_id" value="{{ presentation.id }}">
+                                    <div id="file" class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="inputFile"
+                                                   name="inputFile">
+                                            <label class="custom-file-label" for="inputFile"
+                                                   data-browse="参照">ファイル選択...</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <button type="button" id="inputFileReset"
+                                                    class="btn btn-outline-secondary reset"><i
+                                                    class="fas fa-times fa-fw"></i>取消
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">ウィンドウを閉じる</button>
+                                <button type="submit" class="btn btn-primary" form="uploadFile-{{ presentation.id }}">アップロード</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </main>
+
+{% endblock %}
+{% block js %}
+    <script>
+        $(function () {
+            bsCustomFileInput.init()
+        });
+        document.getElementById('inputFileReset').addEventListener('click', function () {
+            var elem = document.getElementById('inputFile');
+            elem.value = '';
+            elem.dispatchEvent(new Event('change'));
+        });
+    </script>
+{% endblock %}

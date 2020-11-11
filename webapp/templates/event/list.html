@@ -10,7 +10,7 @@
             {% endif %}
             <div class="card-columns">
                 {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
-                {% for event, event_attend_user in event_attend_user_list %}
+                {% for event, event_attend_user, presentation in event_attend_user_list %}
                     <div class="card">
                         {% if event.url %}
                             <div class="card-header">
@@ -29,7 +29,7 @@
                                         <dd class="col-sm-8 offset-sm-4">{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</dd>
                                     {% endif %}
                                 {% endfor %}
-                                <dt class="col-sm-4">講演申込締切：</dt>
+                                <dt class="col-sm-4">発表申込締切：</dt>
                                 <dd class="col-sm-8">{{ event.presenting_papers_period.strftime('%Y年%m月%d日') }}（{{ weekday_list[event.presenting_papers_period.weekday()] }}）</dd>
                                 <dt class="col-sm-4">参加申込締切：</dt>
                                 <dd class="col-sm-8">{{ event.attend_period.strftime('%Y年%m月%d日') }}（{{ weekday_list[event.attend_period.weekday()] }}）</dd>
@@ -39,12 +39,16 @@
                             <form method="post">
                                 {# <input type="hidden" name="event_id" value="{{ event.id }}" /> #}
                                 {% if event_attend_user and not event_attend_user.cancel %}
-                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込内容を確認
+                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加内容を確認
                                     </button>
                                 {% else %}
                                     <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込</button>
                                 {% endif %}
-                                <button type="submit" class="btn btn-info" formaction="/event/presentation/register" name="event_id" value="{{ event.id }}" disabled>講演申込（準備中）</button>
+                                {% if presentation and not presentation.is_cancel %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/presentation/list" name="event_id" value="{{ event.id }}">発表内容を確認</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/presentation/register/input" name="event_id" value="{{ event.id }}">発表申込</button>
+                                {% endif %}
                             </form>
                         </div>
                     </div>

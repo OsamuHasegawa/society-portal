@@ -1,0 +1,77 @@
+{% for i in range(co_author_num) %}
+    <hr class="mb-4">
+
+    <h5 class="mb-3">共同著者 ({{ loop.index }})</h5>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="organization-{{ loop.index }}">組織名（学校名・会社名）</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="organization-{{ loop.index }}" name="organization-{{ loop.index }}" placeholder="JAEIS高等学校" value="" required>
+                <div class="invalid-feedback" style="width: 100%;">
+                    所属を入力してください．
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="department-{{ loop.index }}">部署名</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="department-{{ loop.index }}" name="department-{{ loop.index }}" placeholder="" value="">
+                <div class="invalid-feedback" style="width: 100%;">
+                    所属を入力してください．
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="lastName-{{ loop.index }}">姓</label>
+            <input type="text" class="form-control" id="lastName-{{ loop.index }}" name="lastName-{{ loop.index }}" placeholder="山田" value="" required>
+            <div class="invalid-feedback">
+                姓を入力してください．
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="firstName-{{ loop.index }}">名</label>
+            <input type="text" class="form-control" id="firstName-{{ loop.index }}" name="firstName-{{ loop.index }}" placeholder="太郎" value="" required>
+            <div class="invalid-feedback">
+                名を入力してください．
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="lastNameKana-{{ loop.index }}">姓（カタカナ）</label>
+            <input type="text" class="form-control" id="lastNameKana-{{ loop.index }}" name="lastNameKana-{{ loop.index }}" placeholder="ヤマダ" value="" required>
+            <div class="invalid-feedback">
+                セイを入力してください．
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="firstNameKana-{{ loop.index }}">名（カタカナ）</label>
+            <input type="text" class="form-control" id="firstNameKana-{{ loop.index }}" name="firstNameKana-{{ loop.index }}" placeholder="タロウ" value="" required>
+            <div class="invalid-feedback">
+                メイを入力してください．
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="lastNameKana-{{ loop.index }}">姓（英字）</label>
+            <input type="text" class="form-control" id="lastNameRoman-{{ loop.index }}" name="lastNameRoman-{{ loop.index }}" placeholder="YAMADA" value="" required>
+            <div class="invalid-feedback">
+                姓（英字）を入力してください．
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="firstNameKana-{{ loop.index }}">名（英字）</label>
+            <input type="text" class="form-control" id="firstNameRoman-{{ loop.index }}" name="firstNameRoman-{{ loop.index }}" placeholder="Tarou" value="" required>
+            <div class="invalid-feedback">
+                名（英字）を入力してください．
+            </div>
+        </div>
+    </div>
+{% endfor %}
