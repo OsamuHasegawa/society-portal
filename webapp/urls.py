@@ -555,7 +555,7 @@ def get_receipt():
         'margin-right': '0.75in',
         'margin-bottom': '0.75in',
         'margin-left': '0.75in',
-        'enable-local-file-access': True,
+        'enable-local-file-access': "",
     }
 
     #Blueprintを使っているのでcuurent_appで取得する
