@@ -1,12 +1,16 @@
 import hashlib
+import urllib
+
 import jaconv
 import os
 import random
 import string
+import pdfkit
 
 from flask import Blueprint
 from flask import current_app
 from flask import flash
+from flask import make_response
 from flask import render_template
 from flask import request, redirect, url_for
 from flask import session
@@ -529,3 +533,64 @@ def event_presentation_upload_paper():
 
     return render_template('event/presentation_list.html', title='発表一覧｜JAEIS ポータル', login_user=_login_user, event=event,
                            presentation_list=presentation_list, message='原稿をアップロードしました．', alert='alert-success')
+
+
+@urls.route("/event/get-receipt", methods=["POST"])
+@login_required
+def get_receipt():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).first()
+    event_attend_user = db.session.query(EventAttendUser).filter(
+        db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id)).first()
+    fee = db.session.query(EventFee).filter(
+        db.and_(EventFee.event_id == form.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
+
+    pdf_title = "receipt"
+
+    options = {
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        # 'enable-local-file-access': True,
+    }
+
+    #Blueprintを使っているのでcuurent_appで取得する
+    template = current_app.jinja_env.get_template('event/receipt.html')
+    #Falseはファイルを作成しないでストリームにするフラグ
+    pdf_buf = pdfkit.from_string(template.render(title='領収書｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee), False, options=options)
+
+    response = make_response(pdf_buf)
+    dispostion = "attachment; filename*=UTF-8''"
+    #日本語をUrlエンコード
+    dispostion += urllib.parse.quote(pdf_title + '.pdf')
+    response.headers['Content-Disposition'] = dispostion
+    response.mimetype = 'application/pdf'
+
+    return response
+
+
+    # return render_template('event/receipt.html', title='領収書｜JAEIS ポータル', login_user=_login_user)
+
+
+@urls.route("/event/input-receipt-addressed", methods=["POST"])
+@login_required
+def input_receipt_addressed():
+
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).first()
+    event_attend_user = db.session.query(EventAttendUser).filter(
+        db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id)).first()
+    fee = db.session.query(EventFee).filter(
+        db.and_(EventFee.event_id == form.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
+
+    event_attend_user.receipt_addressed = form.get('receiptAddressed')
+    db.session.add(event_attend_user)
+    db.session.commit()
+
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee)

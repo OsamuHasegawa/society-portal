@@ -9,14 +9,14 @@ verify_ssl = true
 flask = "*"
 flask-migrate = "*"
 flask-sqlalchemy = "*"
-psycopg2-binary = "*"
-psycopg2 = "*"
 flask-login = "*"
 flask-mail = "*"
 jaconv = "*"
 flask-principal = "*"
 flask-wtf = "*"
 uwsgi = "*"
+psycopg2-binary = "*"
+pdfkit = "*"
 
 [requires]
 python_version = "3.8"

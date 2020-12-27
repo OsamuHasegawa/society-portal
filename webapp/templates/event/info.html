@@ -66,6 +66,23 @@
                                     &yen;{{ fee.participation + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
                                 </td>
                             </tr>
+                            {% if event_attend_user.payment_status == '振込確認済み' %}
+                            <form action="/event/get-receipt" method="post">
+                            <tr>
+                                <th class="table-light align-middle" scope="row">領収書</th>
+                                <td>
+                                    {% if event_attend_user.receipt_addressed %}
+                                    <button type="submit" class="btn btn-info" name="event_id" value="{{ event.id }}">発行する</button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-info" data-toggle="modal"
+                                            data-target="#receiptAddressedModal" data-whatever="@mdo"
+                                            name="event_id" value="{{ event.id }}">宛名を入力する
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            </form>
+                            {% endif %}
                             <tr>
                                 <th class="table-light align-middle" scope="row">振込先</th>
                                 <td>
@@ -190,6 +207,40 @@
                     </div>
                 </div>
             {% endif %}
+
+            <div class="modal fade" id="receiptAddressedModal" tabindex="-1" role="dialog"
+                 aria-labelledby="receiptAddressedModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="receiptAddressedModalLabel">領収書の宛名を入力する</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="inputReceiptAddressedForm" action="/event/input-receipt-addressed" method="post">
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label" for="receiptAddressed">宛名</label>
+                                    <div class="col-sm-9 mb-3 align-self-center">
+                                        <input type="text" class="form-control" id="receiptAddressed" name="receiptAddressed" placeholder="宛名" value="" required>
+                                        <span class="text-danger small">宛名は一度入力を完了すると変更できません</span>
+                                        <div class="invalid-feedback">
+                                            宛名を入力してください．
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ウィンドウを閉じる</button>
+                            <button type="submit" class="btn btn-primary" form="inputReceiptAddressedForm">入力を完了する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 

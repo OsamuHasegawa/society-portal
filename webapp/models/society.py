@@ -75,6 +75,7 @@ class EventAttendUser(db.Model):
     attend_social_gathering = db.Column(db.Boolean, nullable=True, default=False)
     payment_status = db.Column(db.TEXT, nullable=True)
     cancel = db.Column(db.Boolean, nullable=True, default=False)
+    receipt_addressed = db.Column(db.TEXT, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST))
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST), onupdate=datetime.now(JST))
 

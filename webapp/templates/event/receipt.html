@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920,initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>{{ title }}</title>
+</head>
+
+<body>
+<div class="container mt-4">
+    <h1 class="text-center">領&emsp;収&emsp;書</h1>
+
+    <div class="row mt-3">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <table class="table table-sm table-borderless">
+                <tr>
+                    <td class="align-bottom" rowspan="2" style="border-bottom: 2px double; width: 60%;">
+                        <p class="h3">{{ event_attend_user.receipt_addressed }} 様</p>
+                    </td>
+                    <td style="width: 10%;"></td>
+                    <td style="width: 30%;"><p>No.{{ event.id }}-{{ login_user.id }}</p></td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;"></td>
+                    <td><p>発行日<time>2020年12月26日</time></p></td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8 bg-light">
+            <p class="h3 text-center py-3"><span style="border-bottom: 2px double;">金{{ "{:,}".format(fee.participation) }}円</span></p>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <p>
+                ただし，日本情報科教育学会 {{event.name}} 参加費として<br/>
+                上記正に領収いたしました．
+            </p>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <p class="text-right">
+                <img class="mb-4" src="https://jaeis.net/static/images/logo-2xplus.png" alt="logo" height="72">
+                日本情報科教育学会
+                <img class="mb-4" src="https://jaeis.net/static/images/imprint.png" alt="logo" height="72">
+            </p>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+</body>
+
+</html>
