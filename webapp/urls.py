@@ -287,7 +287,7 @@ def home():
 @login_required
 def get_event_list():
     _login_user = load_user(current_user.id)
-    event_list = db.session.query(Event).all()
+    event_list = db.session.query(Event).order_by(Event.created_at.desc()).all()
     event_attend_user_list = []
     for event in event_list:
         event_attend_user = db.session.query(EventAttendUser).filter(
@@ -365,7 +365,7 @@ def event_cancel():
     db.session.add(event_attend_user)
     db.session.commit()
 
-    event_list = db.session.query(Event).all()
+    event_list = db.session.query(Event).order_by(Event.created_at.desc()).all()
     event_attend_user_list = []
     for event in event_list:
         event_attend_user = db.session.query(EventAttendUser).filter(
