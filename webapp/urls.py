@@ -291,7 +291,7 @@ def get_event_list():
     event_attend_user_list = []
     for event in event_list:
         event_attend_user = db.session.query(EventAttendUser).filter(
-            db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id)).first()
+            db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id, EventAttendUser.cancel.is_(False))).first()
 
         presentation = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
 
@@ -358,10 +358,10 @@ def event_attend():
 def event_cancel():
     _login_user = load_user(current_user.id)
     form = request.form
-
     event_attend_user = db.session.query(EventAttendUser).filter(
         db.and_((EventAttendUser.user_id == current_user.id), EventAttendUser.event_id == form.get('event_id'))).first()
     event_attend_user.cancel = True
+    cancel_event_name = event_attend_user.event.name
     db.session.add(event_attend_user)
     db.session.commit()
 
@@ -369,11 +369,15 @@ def event_cancel():
     event_attend_user_list = []
     for event in event_list:
         event_attend_user = db.session.query(EventAttendUser).filter(
-            db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id)).first()
-        event_attend_user_list.append([event, event_attend_user])
+            db.and_(EventAttendUser.event_id == event.id, EventAttendUser.user_id == current_user.id, EventAttendUser.cancel.is_(False))).first()
+        presentation = db.session.query(Presentation).filter(
+            db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
+
+        event_attend_user_list.append([event, event_attend_user, presentation])
+
 
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_list=event_list,
-                           event_attend_user_list=event_attend_user_list, message=event_attend_user.event.name + "参加を取り消しました．")
+                           event_attend_user_list=event_attend_user_list, message=cancel_event_name + "の参加を取り消しました．")
 
 
 @urls.route("/event/presentation/register/input", methods=["POST"])
