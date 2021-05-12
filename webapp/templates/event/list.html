@@ -10,7 +10,7 @@
             {% endif %}
             <div class="card-columns">
                 {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
-                {% for event, event_attend_user, presentation in event_attend_user_list %}
+                {% for event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout in event_attend_user_list %}
                     <div class="card">
                         {% if event.url %}
                             <div class="card-header">
@@ -41,11 +41,16 @@
                                 {% if event_attend_user and not event_attend_user.cancel %}
                                     <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加内容を確認
                                     </button>
+                                {% elif is_attend_timeout %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}" disabled>参加申込は締切ました</button>
                                 {% else %}
                                     <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込</button>
                                 {% endif %}
+
                                 {% if presentation and not presentation.is_cancel %}
                                     <button type="submit" class="btn btn-info" formaction="/event/presentation/list" name="event_id" value="{{ event.id }}">発表内容を確認</button>
+                                {% elif is_presenting_timeout %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/presentation/register/input" name="event_id" value="{{ event.id }}" disabled>発表申込は締切ました</button>
                                 {% elif event_attend_user and not event_attend_user.cancel %}
                                     <button type="submit" class="btn btn-info" formaction="/event/presentation/register/input" name="event_id" value="{{ event.id }}">発表申込</button>
                                 {% endif %}

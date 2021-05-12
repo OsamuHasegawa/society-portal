@@ -295,8 +295,19 @@ def get_event_list():
 
         presentation = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
 
-        event_attend_user_list.append([event, event_attend_user, presentation])
+        if event.attend_period < datetime.now():
+            is_attend_timeout = True
+        else:
+            is_attend_timeout = False
+
+        if event.presenting_papers_period < datetime.now():
+            is_presenting_timeout = True
+        else:
+            is_presenting_timeout = False
+
+        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout])
     print(event_attend_user_list)
+
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_attend_user_list=event_attend_user_list, message='')
 
 
@@ -373,7 +384,17 @@ def event_cancel():
         presentation = db.session.query(Presentation).filter(
             db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
 
-        event_attend_user_list.append([event, event_attend_user, presentation])
+        if event.attend_period < datetime.now():
+            is_attend_timeout = True
+        else:
+            is_attend_timeout = False
+
+        if event.presenting_papers_period < datetime.now():
+            is_presenting_timeout = True
+        else:
+            is_presenting_timeout = False
+
+        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout])
 
 
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_list=event_list,
