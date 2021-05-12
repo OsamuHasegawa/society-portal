@@ -46,7 +46,7 @@
                                 {% endif %}
                                 {% if presentation and not presentation.is_cancel %}
                                     <button type="submit" class="btn btn-info" formaction="/event/presentation/list" name="event_id" value="{{ event.id }}">発表内容を確認</button>
-                                {% else %}
+                                {% elif event_attend_user and not event_attend_user.cancel %}
                                     <button type="submit" class="btn btn-info" formaction="/event/presentation/register/input" name="event_id" value="{{ event.id }}">発表申込</button>
                                 {% endif %}
                             </form>
