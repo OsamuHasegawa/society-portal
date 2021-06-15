@@ -80,6 +80,7 @@ class EventAttendUser(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST), onupdate=datetime.now(JST))
 
     event = db.relationship('Event', backref='event_attend_user')
+    user = db.relationship('User')
 
     def __init__(self, user_id, event_id, attend_date, expect_papers, attend_social_gathering, payment_status):
         self.user_id = user_id

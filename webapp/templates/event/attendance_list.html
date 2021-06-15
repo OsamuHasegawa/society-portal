@@ -1,0 +1,99 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
+    <main role="main">
+        <div class="container">
+            {% if message %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+            <form name="change_payment_status" onsubmit="return false;">
+
+                <div class="pt-3">
+                    <div class="card mb-3">
+                        <div class="card-header">参加者リスト</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>ユーザID</th>
+                                    <th>氏名</th>
+                                    <th>所属</th>
+                                    <th>メールアドレス</th>
+                                    <th>参加日</th>
+                                    <th>キャンセル</th>
+                                    <th>会員種別</th>
+                                    <th>振込状況</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for event_attend_user in event_attend_user_list %}
+                                    <tr>
+                                        <td>{{ event_attend_user.user.id }}</td>
+                                        <td>{{ event_attend_user.user.user_profile.get_name() }}</td>
+                                        <td>{{ event_attend_user.user.user_profile.organization }}</td>
+                                        <td>{{ event_attend_user.user.email }}</td>
+                                        <td>
+                                            {% for d in event_attend_user.attend_date %}
+                                                {% if loop.first %}
+                                                    <span>{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</span>
+                                                {% else %}
+                                                    <br>
+                                                    <span>{{ d.strftime('%Y年%m月%d日') }}（{{ weekday_list[d.weekday()] }}）</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{ event_attend_user.cancel }}</td>
+                                        <td>{{ event_attend_user.user.member_type.label }}</td>
+                                        <td>
+                                            <div class="form-check">
+                                                {% if event_attend_user.payment_status == '振込確認済み' %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ event_attend_user.user.id }}" id="flexCheckChecked" onchange="changeHandler(this)" checked>
+                                                {% else %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ event_attend_user.user.id }}" id="flexCheckChecked" onchange="changeHandler(this)">
+                                                {% endif %}
+                                                <label id="u-{{ event_attend_user.user.id }}" class="form-check-label" for="flexCheckChecked">
+                                                    <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    function changeHandler(input_checkbox) {
+                        const checked = $(input_checkbox).prop('checked');
+                        const user_id = $(input_checkbox).val();
+                        console.log(checked);
+                        console.log(user_id);
+                        $.ajax("/event/change-payment-status", {
+                            type: "post",
+                            data: { user_id: user_id, event_id: {{ event_id }}, checked: checked },
+                            dataType: "text",
+                        }).done(function (data) {
+                            console.log("Ajax通信 成功");
+                            let replace;
+                            if(checked) {
+                                replace = '<span class="badge badge-pill badge-info">振込確認済み</span>';
+                            } else {
+                                replace = '<span class="badge badge-pill badge-warning">振込未確認</span>';
+                            }
+                            $("#u-"+user_id).html(replace);
+                        }).fail(function (data) {
+                            console.log("Ajax通信 失敗");
+                        });
+                    }
+                </script>
+            </form>
+
+        </div>
+    </main>
+
+{% endblock %}

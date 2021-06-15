@@ -81,6 +81,9 @@ class UserProfile(db.Model):
         self.address2 = address2
         self.phone = phone
 
+    def get_name(self):
+        return self.last_name + ' ' + self.first_name
+
 
 class Role(db.Model):
     __tablename__ = 'role'

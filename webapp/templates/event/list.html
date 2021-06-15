@@ -12,13 +12,22 @@
                 {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
                 {% for event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout in event_attend_user_list %}
                     <div class="card">
-                        {% if event.url %}
-                            <div class="card-header">
-                                <a href="{{ event.url }}" class="text-info" target="_blank">{{ event.name }}&nbsp;&nbsp;<i class="fas fa-external-link-alt"></i></a>
+                        <div class="card-header" style="overflow: hidden;">
+                            <div class="float-left" >
+                                {% if event.url %}
+                                    <a href="{{ event.url }}" class="text-info align-middle" target="_blank">{{ event.name }}&nbsp;&nbsp;<i class="fas fa-external-link-alt"></i></a>
+                                {% else %}
+                                    {{ event.name }}
+                                {% endif %}
                             </div>
-                        {% else %}
-                            <div class="card-header">{{ event.name }}</div>
-                        {% endif %}
+                            {% if login_user.role <= 2 %}
+                                <form method="post">
+                                    <div class="float-right">
+                                        <button type="submit" formaction="/event/attendance-list" class="btn btn-outline-warning btn-sm" name="event_id" value="{{ event.id }}">参加者リストを確認</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+                        </div>
                         <div class="card-body">
                             <dl class="row">
                                 <dt class="col-sm-4">開催日程：</dt>

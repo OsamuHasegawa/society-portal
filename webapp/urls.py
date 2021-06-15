@@ -7,7 +7,9 @@ import random
 import string
 import pdfkit
 
-from flask import Blueprint
+from distutils.util import strtobool
+
+from flask import Blueprint, jsonify
 from flask import current_app
 from flask import flash
 from flask import make_response
@@ -323,7 +325,12 @@ def event_info():
     fee = db.session.query(EventFee).filter(
         db.and_(EventFee.event_id == form_data.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
 
-    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee)
+    if event.date[0] < datetime.now():
+        enable_get_receipt = True
+    else:
+        enable_get_receipt = False
+
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, enable_get_receipt=enable_get_receipt)
 
 
 @urls.route("/event/attend", methods=["POST"])
