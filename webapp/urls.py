@@ -619,3 +619,44 @@ def input_receipt_addressed():
     db.session.commit()
 
     return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee)
+
+@urls.route("/event/attendance-list", methods=["POST"])
+@login_required
+def event_attendance_list():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event_attend_user_list = db.session.query(EventAttendUser).filter(EventAttendUser.event_id == form.get('event_id')).order_by(EventAttendUser.user_id.asc())
+    # print('参加者リスト', event_attend_user_list)
+    #
+    # for event_attend_user in event_attend_user_list:
+    #     print('event_attend_user', event_attend_user.user.user_profile.first_name)
+
+    return render_template('event/attendance_list.html', title='参加者リスト', login_user=_login_user, event_id=form.get('event_id'), event_attend_user_list=event_attend_user_list)
+
+
+@urls.route("/event/change-payment-status", methods=["POST"])
+@login_required
+def event_change_payment_status():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event_attend_user = db.session.query(EventAttendUser).filter(db.and_(EventAttendUser.user_id == form.get('user_id'), EventAttendUser.event_id == form.get('event_id'))).first()
+    # print('参加者リスト', event_attend_user_list)
+    #
+    # for event_attend_user in event_attend_user_list:
+    #     print('event_attend_user', event_attend_user.user.user_profile.first_name)
+    if strtobool(form.get('checked')):
+        event_attend_user.payment_status = '振込確認済み'
+    else:
+        event_attend_user.payment_status = '振込未確認'
+
+    db.session.add(event_attend_user)
+    db.session.commit()
+
+    # print(form.get('checked'))
+    # print(form.get('event_id'))
+    # print('event_attend_user', event_attend_user.user_id)
+
+    return jsonify(form.get('user_id'), form.get('event_id'), form.get('checked'))
+
