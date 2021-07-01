@@ -1,4 +1,5 @@
 import hashlib
+import mimetypes
 import urllib
 
 import jaconv
@@ -9,7 +10,7 @@ import pdfkit
 
 from distutils.util import strtobool
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, send_file
 from flask import current_app
 from flask import flash
 from flask import make_response
@@ -333,6 +334,18 @@ def event_info():
     return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, enable_get_receipt=enable_get_receipt)
 
 
+@urls.route("/event/getAttachment", methods=["POST"])
+@login_required
+def event_get_attachment():
+    form_data = request.form
+    event = db.session.query(Event).filter(Event.id == form_data.get('event_id')).first()
+
+    path = "attachment/event/" + str(event.id) + "/" + event.attachment_path
+    mimetype = event.attachment_mimetype if event.attachment_mimetype else mimetypes.guess_type(event.attachment_path)[0]
+
+    return send_file(path, as_attachment=True, mimetype=mimetype)
+
+
 @urls.route("/event/attend", methods=["POST"])
 @login_required
 def event_attend():
@@ -611,7 +624,6 @@ def get_receipt():
 @urls.route("/event/input-receipt-addressed", methods=["POST"])
 @login_required
 def input_receipt_addressed():
-
     _login_user = load_user(current_user.id)
     form = request.form
 
@@ -626,6 +638,7 @@ def input_receipt_addressed():
     db.session.commit()
 
     return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee)
+
 
 @urls.route("/event/attendance-list", methods=["POST"])
 @login_required

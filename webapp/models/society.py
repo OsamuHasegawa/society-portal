@@ -30,6 +30,9 @@ class Event(db.Model):
     date = db.Column(db.ARRAY(db.DateTime), nullable=True)
     attend_period = db.Column(db.DateTime, nullable=True)
     presenting_papers_period = db.Column(db.DateTime, nullable=True)
+    attachment_name = db.Column(db.TEXT, nullable=True)
+    attachment_path = db.Column(db.TEXT, nullable=True)
+    attachment_mimetype = db.Column(db.TEXT, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST))
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST), onupdate=datetime.now(JST))
 
