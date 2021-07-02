@@ -340,10 +340,17 @@ def event_get_attachment():
     form_data = request.form
     event = db.session.query(Event).filter(Event.id == form_data.get('event_id')).first()
 
-    path = "attachment/event/" + str(event.id) + "/" + event.attachment_path
+    path = "webapp/attachment/event/" + str(event.id) + "/" + event.attachment_path
     mimetype = event.attachment_mimetype if event.attachment_mimetype else mimetypes.guess_type(event.attachment_path)[0]
+    #
+    # return send_file(path, as_attachment=True, mimetype=mimetype)
 
-    return send_file(path, as_attachment=True, mimetype=mimetype)
+    response = make_response()
+    response.data = open(path, "rb").read()
+    response.headers['Content-Disposition'] = 'attachment; filename=' + event.attachment_path
+    response.mimetype = mimetype
+
+    return response
 
 
 @urls.route("/event/attend", methods=["POST"])
