@@ -61,10 +61,12 @@
                                 </tr>
 {#                            </form>#}
                             {% endif %}
+                            {% if event.has_papers %}
                             <tr>
                                 <th class="table-light" scope="row">講演論文集</th>
                                 <td>{{ event_attend_user.expect_papers | replace('False', '希望しない') | replace('True', '希望する') }}</td>
                             </tr>
+                            {% endif %}
                             {% if event.has_social_gathering %}
                                 <tr>
                                     <th class="table-light" scope="row">情報交換会</th>
