@@ -10,7 +10,7 @@
             {% endif %}
             <div class="card-columns">
                 {% set weekday_list = ['月', '火', '水', '木', '金', '土', '日', ] %}
-                {% for event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout in event_attend_user_list %}
+                {% for event, event_attend_user, presentation, is_attend_timeout, is_pre_attend_timeout, is_presenting_timeout in event_attend_user_list %}
                     <div class="card">
                         <div class="card-header" style="overflow: hidden;">
                             <div class="float-left" >
@@ -52,6 +52,8 @@
                                     </button>
                                 {% elif is_attend_timeout %}
                                     <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}" disabled>参加申込は締切ました</button>
+                                {% elif is_pre_attend_timeout %}
+                                    <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">当日参加として申し込む</button>
                                 {% else %}
                                     <button type="submit" class="btn btn-info" formaction="/event/info" name="event_id" value="{{ event.id }}">参加申込</button>
                                 {% endif %}

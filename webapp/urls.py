@@ -30,7 +30,6 @@ from webapp.login_manager import login_manager
 
 urls = Blueprint('urls', __name__)
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
@@ -298,17 +297,22 @@ def get_event_list():
 
         presentation = db.session.query(Presentation).filter(db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
 
-        if event.attend_period < datetime.now():
+        if event.date[-1] < datetime.now():
             is_attend_timeout = True
         else:
             is_attend_timeout = False
+
+        if event.attend_period < datetime.now():
+            is_pre_attend_timeout = True
+        else:
+            is_pre_attend_timeout = False
 
         if event.presenting_papers_period < datetime.now():
             is_presenting_timeout = True
         else:
             is_presenting_timeout = False
 
-        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout])
+        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_pre_attend_timeout, is_presenting_timeout])
     print(event_attend_user_list)
 
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_attend_user_list=event_attend_user_list, message='')
@@ -375,7 +379,8 @@ def event_attend():
         event_attend_user = EventAttendUser(user_id=current_user.id, event_id=form.get('event_id'), attend_date=attend_date,
                                             expect_papers=(True if form.get('expect_papers') == 'True' else False),
                                             attend_social_gathering=(True if form.getlist('attend_social_gathering') == 'True' else False),
-                                            payment_status=PaymentStatusDefinition.UNCONFIRMED.value)
+                                            payment_status=PaymentStatusDefinition.UNCONFIRMED.value,
+                                            created_at=datetime.now(JST))
     db.session.add(event_attend_user)
     db.session.commit()
 
@@ -411,17 +416,22 @@ def event_cancel():
         presentation = db.session.query(Presentation).filter(
             db.and_(Presentation.event_id == event.id, Presentation.user_id == current_user.id, Presentation.is_cancel.is_(False))).first()
 
-        if event.attend_period < datetime.now():
+        if event.date[-1] < datetime.now():
             is_attend_timeout = True
         else:
             is_attend_timeout = False
+
+        if event.attend_period < datetime.now():
+            is_pre_attend_timeout = True
+        else:
+            is_pre_attend_timeout = False
 
         if event.presenting_papers_period < datetime.now():
             is_presenting_timeout = True
         else:
             is_presenting_timeout = False
 
-        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_presenting_timeout])
+        event_attend_user_list.append([event, event_attend_user, presentation, is_attend_timeout, is_pre_attend_timeout, is_presenting_timeout])
 
 
     return render_template('event/list.html', title='大会・研究会一覧｜JAEIS ポータル', login_user=_login_user, event_list=event_list,

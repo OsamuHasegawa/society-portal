@@ -57,6 +57,7 @@ class EventFee(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     member_type_id = db.Column(db.Integer, db.ForeignKey('member_type.id'), nullable=False)
     participation = db.Column(db.Integer, nullable=False, default=0)
+    participation_on_the_day = db.Column(db.Integer, nullable=True, default=0)
     papers = db.Column(db.Integer, nullable=False, default=0)
     social_gathering = db.Column(db.Integer, nullable=False, default=0)
     corporate_exhibition = db.Column(db.Integer, nullable=False, default=0)
@@ -85,13 +86,14 @@ class EventAttendUser(db.Model):
     event = db.relationship('Event', backref='event_attend_user')
     user = db.relationship('User')
 
-    def __init__(self, user_id, event_id, attend_date, expect_papers, attend_social_gathering, payment_status):
+    def __init__(self, user_id, event_id, attend_date, expect_papers, attend_social_gathering, payment_status, created_at):
         self.user_id = user_id
         self.event_id = event_id
         self.attend_date = attend_date
         self.expect_papers = expect_papers
         self.attend_social_gathering = attend_social_gathering
         self.payment_status = payment_status
+        self.created_at = created_at
 
 
 class Presentation(db.Model):

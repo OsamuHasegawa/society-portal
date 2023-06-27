@@ -77,7 +77,11 @@
                                 <th class="table-light align-middle" scope="row">費用</th>
                                 <td>
                                     <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span><br/>
-                                    &yen;{{ fee.participation + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                    {% if event_attend_user.created_at < event.attend_period %}
+                                        &yen;{{ fee.participation + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                    {% else  %}
+                                        &yen;{{ fee.participation_on_the_day + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation_on_the_day }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% if event_attend_user.payment_status == '振込確認済み' and enable_get_receipt%}
