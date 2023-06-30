@@ -697,3 +697,16 @@ def event_change_payment_status():
 
     return jsonify(form.get('user_id'), form.get('event_id'), form.get('checked'))
 
+
+@urls.route("/event/getAttachment", methods=["POST"])
+@login_required
+def get_attachment():
+    _login_user = load_user(current_user.id)
+    form = request.form
+
+    event = db.session.query(Event).filter(Event.id == form.get('event_id')).first()
+
+    filename = event.attachment_path
+    filepath = './webapp/attachement/event/' + event.id + '/' + filename
+
+    return send_file(filepath, as_attachment=True, attachment_filename=filename, mimetype=event.attachment_mimetype)

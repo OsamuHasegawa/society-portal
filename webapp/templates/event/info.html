@@ -58,16 +58,16 @@
                                 </tr>
                             {% endif %}
                             {% if event.attachment_path and event_attend_user.payment_status == '振込確認済み' %}
-{#                            <form action="/event/getAttachment" method="post">#}
+                            <form action="/event/getAttachment" method="post">
                                 <tr>
                                     <th class="table-light align-middle" scope="row">添付ファイル</th>
                                     <td>
-{#                                        <button type="submit" class="btn btn-info" name="event_id" value="{{ event.id }}">{{ event.attachment_name }}</button>#}
+                                        <button type="submit" class="btn btn-info" name="event_id" value="{{ event.id }}">{{ event.attachment_name }}</button>
 {#                                        <a class="btn btn-info" href="{{ url_for('static', filename='JAEIS2021.zip') }}" target="_blank">{{ event.attachment_name }}</a>#}
-                                        <a class="btn btn-info" href="https://jaeis-org.sakura.ne.jp/taikai/wp/wp-content/uploads/2021/07/JAEIS2021.zip" target="_blank">{{ event.attachment_name }}</a>
+{#                                        <a class="btn btn-info" href="https://jaeis-org.sakura.ne.jp/taikai/wp/wp-content/uploads/2021/07/JAEIS2021.zip" target="_blank">{{ event.attachment_name }}</a>#}
                                     </td>
                                 </tr>
-{#                            </form>#}
+                            </form>
                             {% endif %}
                             {% if event.has_papers %}
                             <tr>
