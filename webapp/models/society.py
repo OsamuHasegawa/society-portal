@@ -33,6 +33,8 @@ class Event(db.Model):
     attachment_name = db.Column(db.TEXT, nullable=True)
     attachment_path = db.Column(db.TEXT, nullable=True)
     attachment_mimetype = db.Column(db.TEXT, nullable=True)
+    paper_id = db.Column(db.TEXT, nullable=True)
+    paper_password = db.Column(db.TEXT, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST))
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now(JST), onupdate=datetime.now(JST))
 
