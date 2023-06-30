@@ -35,7 +35,11 @@
     <div class="row mt-3">
         <div class="col-sm-2"></div>
         <div class="col-sm-8 bg-light">
-            <p class="h3 text-center py-3"><span style="border-bottom: 2px double;">金{{ "{:,}".format(fee.participation) }}円</span></p>
+            {% if event_attend_user.created_at < event.attend_period %}
+                <p class="h3 text-center py-3"><span style="border-bottom: 2px double;">金{{ "{:,}".format(fee.participation) }}円</span></p>
+            {% else %}
+                <p class="h3 text-center py-3"><span style="border-bottom: 2px double;">金{{ "{:,}".format(fee.participation_on_the_day) }}円</span></p>
+            {% endif %}
         </div>
         <div class="col-sm-2"></div>
     </div>
