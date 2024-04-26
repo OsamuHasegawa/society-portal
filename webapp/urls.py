@@ -330,12 +330,15 @@ def event_info():
     fee = db.session.query(EventFee).filter(
         db.and_(EventFee.event_id == form_data.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
 
+    papers_fee = fee.papers if event_attend_user.expect_papers else 0
+    social_gathering_fee = fee.social_gathering if event_attend_user.attend_social_gathering else 0
+
     if event.date[0] < datetime.now():
         enable_get_receipt = True
     else:
         enable_get_receipt = False
 
-    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, enable_get_receipt=enable_get_receipt)
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, papers_fee=papers_fee, social_gathering_fee=social_gathering_fee, enable_get_receipt=enable_get_receipt)
 
 
 @urls.route("/event/getAttachment", methods=["POST"])
@@ -372,13 +375,13 @@ def event_attend():
     if event_attend_user:
         event_attend_user.attend_date = attend_date
         event_attend_user.expect_papers = True if form.get('expect_papers') == 'True' else False
-        event_attend_user.attend_social_gathering = True if form.getlist('attend_social_gathering') == 'True' else False
+        event_attend_user.attend_social_gathering = True if form.get('attend_social_gathering') == 'True' else False
         event_attend_user.cancel = False
         event_attend_user.updated_at = datetime.now(JST)
     else:
         event_attend_user = EventAttendUser(user_id=current_user.id, event_id=form.get('event_id'), attend_date=attend_date,
                                             expect_papers=(True if form.get('expect_papers') == 'True' else False),
-                                            attend_social_gathering=(True if form.getlist('attend_social_gathering') == 'True' else False),
+                                            attend_social_gathering=(True if form.get('attend_social_gathering') == 'True' else False),
                                             payment_status=PaymentStatusDefinition.UNCONFIRMED.value,
                                             created_at=datetime.now(JST))
     db.session.add(event_attend_user)
@@ -392,8 +395,10 @@ def event_attend():
     fee = db.session.query(EventFee).filter(
         db.and_(EventFee.event_id == form.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
 
-    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee,
-                           message='参加申込を受付ました．')
+    papers_fee = fee.papers if event_attend_user.expect_papers else 0
+    social_gathering_fee = fee.social_gathering if event_attend_user.attend_social_gathering else 0
+
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, papers_fee=papers_fee, social_gathering_fee=social_gathering_fee, message='参加申込を受付ました．')
 
 
 @urls.route("/event/cancel", methods=["POST"])

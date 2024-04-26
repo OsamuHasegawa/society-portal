@@ -86,13 +86,13 @@
                                 <td>
                                     <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span><br/>
                                     {% if event_attend_user.created_at < event.attend_period %}
-                                        &yen;{{ fee.participation + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                        &yen;{{ fee.participation + papers_fee + social_gathering_fee }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ papers_fee }}，情報交換会：&yen;{{ social_gathering_fee }}）
                                     {% else  %}
-                                        &yen;{{ fee.participation_on_the_day + fee.papers + fee.social_gathering }}（参加費：&yen;{{ fee.participation_on_the_day }}，講演論文集：&yen;{{ fee.papers }}，情報交換会：&yen;{{ fee.social_gathering }}）
+                                        &yen;{{ fee.participation_on_the_day + papers_fee + social_gathering_fee }}（参加費：&yen;{{ fee.participation_on_the_day }}，講演論文集：&yen;{{ papers_fee }}，情報交換会：&yen;{{ social_gathering_fee }}）
                                     {% endif %}
                                 </td>
                             </tr>
-                            {% if event_attend_user.payment_status == '振込確認済み' and enable_get_receipt%}
+                            {% if event_attend_user.payment_status == '振込確認済み' and enable_get_receipt %}
                             <form action="/event/get-receipt" method="post">
                             <tr>
                                 <th class="table-light align-middle" scope="row">領収書</th>
