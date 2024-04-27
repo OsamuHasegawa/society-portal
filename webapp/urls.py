@@ -330,8 +330,12 @@ def event_info():
     fee = db.session.query(EventFee).filter(
         db.and_(EventFee.event_id == form_data.get('event_id'), EventFee.member_type_id == _login_user.member_type.id)).first()
 
-    papers_fee = fee.papers if event_attend_user.expect_papers else 0
-    social_gathering_fee = fee.social_gathering if event_attend_user.attend_social_gathering else 0
+    if event_attend_user:
+        papers_fee = fee.papers if event_attend_user.expect_papers else 0
+        social_gathering_fee = fee.social_gathering if event_attend_user.attend_social_gathering else 0
+    else:
+        papers_fee = fee.papers
+        social_gathering_fee = fee.social_gathering
 
     if event.date[0] < datetime.now():
         enable_get_receipt = True
