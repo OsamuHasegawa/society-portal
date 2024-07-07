@@ -663,7 +663,20 @@ def input_receipt_addressed():
     db.session.add(event_attend_user)
     db.session.commit()
 
-    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee)
+    if event_attend_user:
+        papers_fee = fee.papers if event_attend_user.expect_papers else 0
+        social_gathering_fee = fee.social_gathering if event_attend_user.attend_social_gathering else 0
+    else:
+        papers_fee = fee.papers
+        social_gathering_fee = fee.social_gathering
+
+    if event.date[0] < datetime.now():
+        enable_get_receipt = True
+    else:
+        enable_get_receipt = False
+
+    return render_template('event/info.html', title='大会・研究会 参加状況｜JAEIS ポータル', login_user=_login_user, event=event, event_attend_user=event_attend_user, fee=fee, papers_fee=papers_fee, social_gathering_fee=social_gathering_fee, enable_get_receipt=enable_get_receipt)
+
 
 
 @urls.route("/event/attendance-list", methods=["POST"])
