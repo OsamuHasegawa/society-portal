@@ -1,32 +1,36 @@
 import hashlib
 import mimetypes
-import urllib
-
-import jaconv
 import os
 import random
 import string
-import pdfkit
-
+import urllib
 from distutils.util import strtobool
 
-from flask import Blueprint, jsonify, send_file
-from flask import current_app
-from flask import flash
-from flask import make_response
-from flask import render_template
-from flask import request, redirect, url_for
-from flask import session
+import jaconv
+import pdfkit
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
+from flask_login import current_user, login_required, login_user, logout_user
 from flask_mail import Message
-from flask_login import login_required, login_user, logout_user, current_user
 
+from webapp.definition.payment_status import PaymentStatus as PaymentStatusDefinition
 from webapp.definition.role import Role as RoleDefinition
 from webapp.definition.state import State as StateDefinition
-from webapp.definition.payment_status import PaymentStatus as PaymentStatusDefinition
+from webapp.login_manager import login_manager
 from webapp.mail import mail
 from webapp.models.society import *
 from webapp.models.user import *
-from webapp.login_manager import login_manager
 
 urls = Blueprint('urls', __name__)
 
@@ -283,6 +287,42 @@ def change_password():
 def home():
     _login_user = load_user(current_user.id)
     return render_template('home.html', title='マイページ｜JAEIS ポータル', login_user=_login_user)
+
+
+@urls.route("/setting/profile")
+@login_required
+def profile():
+    _login_user = load_user(current_user.id)
+    _member_types = db.session.query(MemberType)
+    return render_template('setting/profile.html', title='会員情報｜JAEIS ポータル', login_user=_login_user, member_types=_member_types)
+
+
+@urls.route("/setting/update-profile", methods=["POST"])
+def update_profile():
+    _login_user = load_user(current_user.id)
+    _member_types = db.session.query(MemberType)
+    form = request.form
+
+    _user = db.session.query(User).filter(User.id == current_user.id).first()
+    _user.email = form.get('email1')
+    _user.member_type_id = form.get('member_type')
+    print("------")
+    print(form.get('member_type'))
+    print("------")
+    _user.user_profile.first_name = form.get('firstName')
+    _user.user_profile.last_name = form.get('lastName')
+    _user.user_profile.first_name_kana = form.get('firstNameKana')
+    _user.user_profile.last_name_kana = form.get('lastNameKana')
+    _user.user_profile.first_name_roman = form.get('firstNameRoman')
+    _user.user_profile.last_name_roman = form.get('lastNameRoman')
+    _user.user_profile.organization = form.get('organization')
+    _user.user_profile.department = form.get('department')
+    _user.user_profile.phone = form.get('phone')
+
+    db.session.add(_user)
+    db.session.commit()
+
+    return render_template('setting/profile.html', title='会員情報｜JAEIS ポータル', login_user=_login_user, member_types=_member_types, message="会員情報を更新しました．")
 
 
 @urls.route("/event/list")

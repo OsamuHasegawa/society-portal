@@ -1,0 +1,128 @@
+{% extends "layout_body.html" %}
+
+{% block content %}
+    <main role="main">
+        <div class="container">
+            {% if message %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h2>会員情報</h2>
+                    <form action="/setting/update-profile" method="POST" class="needs-validation" novalidate>
+                        <hr class="mb-3">
+                        <h3 class="mb-3">基本情報</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName">姓</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="山田" value="{{ login_user.user_profile.last_name }}" required>
+                                <div class="invalid-feedback">
+                                    姓を入力してください．
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName">名</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="太郎" value="{{ login_user.user_profile.first_name }}" required>
+                                <div class="invalid-feedback">
+                                    名を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastNameKana">姓（カタカナ）</label>
+                                <input type="text" class="form-control" id="lastNameKana" name="lastNameKana" placeholder="ヤマダ" value="{{ login_user.user_profile.last_name_kana }}" required>
+                                <div class="invalid-feedback">
+                                    姓（カタカナ）を入力してください．
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstNameKana">名（カタカナ）</label>
+                                <input type="text" class="form-control" id="firstNameKana" name="firstNameKana" placeholder="タロウ" value="{{ login_user.user_profile.first_name_kana }}" required>
+                                <div class="invalid-feedback">
+                                    名（カタカナ）を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastNameKana">姓（英字）</label>
+                                <input type="text" class="form-control" id="lastNameRoman" name="lastNameRoman" placeholder="YAMADA" value="{{ login_user.user_profile.last_name_roman }}" required>
+                                <div class="invalid-feedback">
+                                    姓（英字）を入力してください．
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstNameKana">名（英字）</label>
+                                <input type="text" class="form-control" id="firstNameRoman" name="firstNameRoman" placeholder="Tarou" value="{{ login_user.user_profile.first_name_roman }}" required>
+                                <div class="invalid-feedback">
+                                    名（英字）を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="organization">所属機関</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="organization" name="organization" value="{{ login_user.user_profile.organization }}" required>
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                        所属機関を入力してください．
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="department">部署名</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="department" name="department" value="{{ login_user.user_profile.department }}" required>
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                        部署名を入力してください．
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email1">メールアドレス<span class="text-muted"></span></label>
+                                <input type="email" class="form-control" id="email1" name="email1" value="{{ login_user.email }}" required>
+                                <div class="invalid-feedback">
+                                    メールアドレスを入力してください．
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone">電話番号</label>
+                                <input type="text" class="form-control" id="phone" name="phone" placeholder="123-456-7890" value="{{ login_user.user_profile.phone }}" required >
+                                <div class="invalid-feedback">
+                                    電話番号を入力してください．
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-3">
+                        <h3 class="mb-3">会員種別</h3>
+                        <div class="row">
+                            <div class="col-md-12 mb-3 align-self-center">   
+                                {% for member_type in member_types %}
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="member_type_{{ member_type.id }}" name="member_type" value="{{ member_type.id }}" 
+                                        {% if member_type.id == login_user.member_type.id %}checked{% endif %}>
+                                    <label for="member_type_{{ member_type.id }}">{{ member_type.label }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <hr class="mb-3">
+                        <button class="btn btn-info btn-lg btn-block" type="submit">会員情報を更新する</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
