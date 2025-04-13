@@ -134,7 +134,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="organization">所属機関</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="organization" name="organization" value="{{ login_user.user_profile.organization }}" required>
+                                    <input type="text" class="form-control" id="organization" name="organization" value="{{ login_user.user_profile.organization }}" disabled>
                                     <div class="invalid-feedback" style="width: 100%;">
                                         所属機関を入力してください．
                                     </div>
@@ -143,7 +143,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="department">部署名</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="department" name="department" value="{{ login_user.user_profile.department }}" required>
+                                    <input type="text" class="form-control" id="department" name="department" value="{{ login_user.user_profile.department }}" disabled>
                                     <div class="invalid-feedback" style="width: 100%;">
                                         部署名を入力してください．
                                     </div>
@@ -154,36 +154,36 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="lastName">姓</label>
-                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="山田" value="{{ login_user.user_profile.last_name }}" required>
+                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="山田" value="{{ login_user.user_profile.last_name }}" disabled>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="firstName">名</label>
-                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="太郎" value="{{ login_user.user_profile.first_name }}" required>
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="太郎" value="{{ login_user.user_profile.first_name }}" disabled>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="lastNameKana">姓（カタカナ）</label>
-                                <input type="text" class="form-control" id="lastNameKana" name="lastNameKana" placeholder="ヤマダ" value="{{ login_user.user_profile.last_name_kana }}" required>
+                                <input type="text" class="form-control" id="lastNameKana" name="lastNameKana" placeholder="ヤマダ" value="{{ login_user.user_profile.last_name_kana }}" disabled>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="firstNameKana">名（カタカナ）</label>
-                                <input type="text" class="form-control" id="firstNameKana" name="firstNameKana" placeholder="タロウ" value="{{ login_user.user_profile.first_name_kana }}" required>
+                                <input type="text" class="form-control" id="firstNameKana" name="firstNameKana" placeholder="タロウ" value="{{ login_user.user_profile.first_name_kana }}" disabled>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="lastNameKana">姓（英字）</label>
-                                <input type="text" class="form-control" id="lastNameRoman" name="lastNameRoman" placeholder="YAMADA" value="{{ login_user.user_profile.last_name_roman }}" required>
+                                <input type="text" class="form-control" id="lastNameRoman" name="lastNameRoman" placeholder="YAMADA" value="{{ login_user.user_profile.last_name_roman }}" disabled>
                                 <div class="invalid-feedback">
                                     姓（英字）を入力してください．
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="firstNameKana">名（英字）</label>
-                                <input type="text" class="form-control" id="firstNameRoman" name="firstNameRoman" placeholder="Tarou" value="{{ login_user.user_profile.first_name_roman }}" required>
+                                <input type="text" class="form-control" id="firstNameRoman" name="firstNameRoman" placeholder="Tarou" value="{{ login_user.user_profile.first_name_roman }}" disabled>
                                 <div class="invalid-feedback">
                                     名（英字）を入力してください．
                                 </div>
