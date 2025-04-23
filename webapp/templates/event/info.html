@@ -84,12 +84,19 @@
                             <tr>
                                 <th class="table-light align-middle" scope="row">費用</th>
                                 <td>
-                                    <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span><br/>
-                                    {% if event_attend_user.created_at < event.attend_period %}
-                                        &yen;{{ fee.participation + papers_fee + social_gathering_fee }}（参加費：&yen;{{ fee.participation }}，講演論文集：&yen;{{ papers_fee }}，情報交換会：&yen;{{ social_gathering_fee }}）
-                                    {% else  %}
-                                        &yen;{{ fee.participation_on_the_day + papers_fee + social_gathering_fee }}（参加費：&yen;{{ fee.participation_on_the_day }}，講演論文集：&yen;{{ papers_fee }}，情報交換会：&yen;{{ social_gathering_fee }}）
-                                    {% endif %}
+                                    <p>
+                                        <span class="badge badge-pill badge-{{ 'info' if event_attend_user.payment_status == '振込確認済み' else 'warning' }}">{{ event_attend_user.payment_status }}</span><br/>
+                                        {% if event_attend_user.created_at < event.attend_period %}
+                                            ¥{{ fee.participation + papers_fee + social_gathering_fee }}（参加費：¥{{ fee.participation }}，講演論文集：¥{{ papers_fee }}，情報交換会：¥{{ social_gathering_fee }}）
+                                        {% else  %}
+                                            ¥{{ fee.participation_on_the_day + papers_fee + social_gathering_fee }}（参加費：¥{{ fee.participation_on_the_day }}，講演論文集：¥{{ papers_fee }}，情報交換会：¥{{ social_gathering_fee }}）
+                                        {% endif %}
+                                    </p>
+                                    <p class="h6"><span class="badge badge-pill badge-danger">振込状況の表示について</span></p>
+                                    <ul>
+                                        <li>振り込みの確認・反映には，時間がかかる場合がございます．</li>
+                                        <li>振り込みに不備がある場合は，担当者からメールでご連絡させていただきます．</li>
+                                    </ul>
                                 </td>
                             </tr>
                             {% if event_attend_user.payment_status == '振込確認済み' and enable_get_receipt %}
@@ -169,7 +176,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <h2>{{ event.name }}</h2>
-                        <form action="/event/attend" method="POST" class="needs-validation" novalidate oninput='validateForm()'>
+                        <form action="/event/attend" method="post" class="needs-validation" novalidate oninput='validateForm()'>
                             <input type="hidden" name="event_id" value="{{ event.id }}"/>
                             <hr class="mb-4">
                             <h4 class="mb-3">参加予定日</h4>
@@ -244,7 +251,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="receiptAddressedModalLabel">領収書の宛名を入力する</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                                <span aria-hidden="true">×</span>
                             </button>
                         </div>
                         <div class="modal-body">
